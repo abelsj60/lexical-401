@@ -84,7 +84,7 @@ nodes: [
 
 `$createNewLinedCodeNode()` takes an options object.
 
-You don't need to fill in every property. Lexical's Override API will merge your choices at call site with the default options that were passed when registering nodes on the `LexicalComposer`. Sensible fallbacks exist for neighter is provided.
+You don't need to fill in every property. Lexical's Override API will merge your choices at call site with the default options that were passed when registering nodes on the `LexicalComposer`. Sensible fallbacks exist if neither is provided.
 
 Please see "import/export" for how this affects serialization.
 

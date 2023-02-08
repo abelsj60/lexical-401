@@ -31,7 +31,7 @@ This means that React does not re-render whenever a change is made to the `edito
 There are two Lexical quirks to know when making editors portable:
 
 - During an an active session, you must always pass an existing editor instance to newly mounting `LexicalComposers` via their `editor__DEPRECATED` property. There is no other way to preserve history at this time.
-- When remounting an instance, you'll want to stop Lexical from adding a new entry to the `undoStack` for the “initializing” editor. This is done by *merging* it with the current entry. Don’t worry — the `EditorStorePlugin` will do this for you!
+- When remounting an instance, you'll want to stop Lexical from adding a new entry to the `undoStack` for the “initializing” editor. This is done by *merging* it with the current entry. Don’t worry — the `EditorStorePlugin` does this for you.
 
 ## **Guides**
 
