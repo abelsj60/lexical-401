@@ -18,7 +18,7 @@ Root (<div />)
     Linebreak (<br />)
 ```
 
-Some functionality is hard to achieve with the official CodeNode:
+Some functionality is hard to achieve with the official `CodeNode`:
 
 - It can be hard to conceptualize what line a user is on at any given time.
 
@@ -52,7 +52,8 @@ This includes creating code lines, tokens, and highlight nodes. Want to load cod
   linedCodeNode.append([codeLine]);
   ```
 
-Note: Call `ADD_DISCRETE_LINE_CLASSES_COMMAND`, such as via an `onClick` listener, to add individual line classes. This allows you to direct user attention in almost any way.
+Note: Need to call user attention to one or more lines in particular? No problem. 
+You can add discret line classes — such as "active" to one or more of your lines via the `ADD_DISCRETE_LINE_CLASSES_COMMAND` command or its sibling method. 
 
 ### Text handling
 
@@ -216,7 +217,7 @@ Individual lines always track their own line number via a node property and data
 
 You can toggle line-number visibility by using the `toggleLineNumbers` method on the `LinedCodeNode`. When off, the line number class will be removed from the `code` element and its child `divs`.
 
-##### Capalities and limitations
+##### Capabilities and limitations
 
 This isn’t 100% perfect. 
 

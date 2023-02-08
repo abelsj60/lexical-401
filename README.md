@@ -10,7 +10,7 @@ I was extending Lexical while working on my own project when I said to myself, "
 
 "Where, though?," I answered myself aloud. "There's nowhere to collect unofficial Lexical things right now." 
 
-And that's how Lexical-401 was born. I may be the only one to use it, but you're welcome to, too. If Meta does something official, I'd be happy to send what's here there. For now, this seems helpful. And, really, who doesn't love the *unauthorized*? Exactly. No one.
+And that's how Lexical-401 was born. I may be the only one to use it, but you're welcome to, too. If Meta does something official, I'd be happy to send what's here there. For now, this seems helpful — and, really, who doesn't love the *unauthorized*? Exactly. No one.
 
 -j (abelsj60@gmail.com)
 

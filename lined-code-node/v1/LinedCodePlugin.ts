@@ -39,10 +39,10 @@ function removeHighlightsWithNoTextAfterImportJSON(
   highlightNode: LinedCodeTextNode,
 ) {
   // needed because exportJSON may export an empty highlight node when
-  // it has a length of one. exportDOM is fixed via a patch in export
-  // algorithm. exportJSON seems harder to patch. further, we can't
-  // fix it in a 'created' mutation as this seems to destroy
-  // history (it stops working after we use .remove).
+  // it has a length of one. exportDOM has been fixed via PR. But...
+  // exportJSON seems harder to fix, so i'm handling it here. also
+  // note, i can't fix it in a 'created' mutation because this
+  // seems to kill history (it dies after .remove runs).
   const isBlankString = highlightNode.getTextContent() === '';
 
   if (isBlankString) {
