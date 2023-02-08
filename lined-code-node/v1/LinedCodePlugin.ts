@@ -20,8 +20,8 @@ import type {
 import {
   CHANGE_THEME_NAME_COMMAND,
   CODE_TO_PLAIN_TEXT_COMMAND,
-  TOGGLE_BLOCK_LOCK,
-  TOGGLE_LINE_NUMBERS,
+  TOGGLE_BLOCK_LOCK_COMMAND,
+  TOGGLE_LINE_NUMBERS_COMMAND,
   TOGGLE_TABS_COMMAND,
 } from './Commands';
 import {
@@ -197,7 +197,7 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
       COMMAND_PRIORITY_LOW,
     ),
     editor.registerCommand(
-      TOGGLE_BLOCK_LOCK,
+      TOGGLE_BLOCK_LOCK_COMMAND,
       () => {
         const codeNode = $getLinedCodeNode();
 
@@ -210,7 +210,7 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
       COMMAND_PRIORITY_LOW,
     ),
     editor.registerCommand(
-      TOGGLE_LINE_NUMBERS,
+      TOGGLE_LINE_NUMBERS_COMMAND,
       () => {
         const codeNode = $getLinedCodeNode();
 

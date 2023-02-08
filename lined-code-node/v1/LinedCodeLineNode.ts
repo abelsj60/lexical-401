@@ -17,8 +17,8 @@ import type {LinedCodeNode} from './LinedCodeNode';
 import {$createLinedCodeNode} from './LinedCodeNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
 import type { LinedCodeTextNode } from './LinedCodeTextNode';
-import { $isLinedCodeTextNode, addClassNamesToElement, removeClassNamesFromElement } from './LinedCodeTextNode';
-import {$getLinesFromSelection, isTabOrSpace} from './utils';
+import { $isLinedCodeTextNode } from './LinedCodeTextNode';
+import {$getLinesFromSelection, addClassNamesToElement, isTabOrSpace, removeClassNamesFromElement} from './utils';
 
 type SerializedLinedCodeLineNode = Spread<
   {

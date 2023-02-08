@@ -13,7 +13,7 @@ import type {
 } from 'lexical';
 
 import {$isLinedCodeNode} from './LinedCodeNode';
-import {getHighlightThemeClass} from './utils';
+import {addClassNamesToElement, getHighlightThemeClass, removeClassNamesFromElement} from './utils';
 import { $isLinedCodeLineNode } from './LinedCodeLineNode';
 
 type SerializedLinedCodeTextNode = Spread<
@@ -205,27 +205,4 @@ export function $isLinedCodeTextNode(
   node: LexicalNode | LinedCodeTextNode | null | undefined,
 ): node is LinedCodeTextNode {
   return node instanceof LinedCodeTextNode;
-}
-
-export function addClassNamesToElement(
-  element: HTMLElement,
-  ...classNames: Array<typeof undefined | boolean | null | string>
-): void {
-  classNames.forEach((className) => {
-    if (typeof className === 'string') {
-      const classesToAdd = className.split(' ').filter((n) => n !== '');
-      element.classList.add(...classesToAdd);
-    }
-  });
-}
-
-export function removeClassNamesFromElement(
-  element: HTMLElement,
-  ...classNames: Array<typeof undefined | boolean | null | string>
-): void {
-  classNames.forEach((className) => {
-    if (typeof className === 'string') {
-      element.classList.remove(...className.split(' '));
-    }
-  });
 }

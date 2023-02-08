@@ -5,6 +5,6 @@ import {createCommand} from 'lexical';
 export const CHANGE_THEME_NAME_COMMAND: LexicalCommand<string> = createCommand();
 export const CODE_TO_PLAIN_TEXT_COMMAND: LexicalCommand<boolean | undefined> = createCommand();
 export const SET_LANGUAGE_COMMAND: LexicalCommand<string> = createCommand();
-export const TOGGLE_BLOCK_LOCK: LexicalCommand<void> = createCommand();
-export const TOGGLE_LINE_NUMBERS: LexicalCommand<void> = createCommand();
+export const TOGGLE_BLOCK_LOCK_COMMAND: LexicalCommand<void> = createCommand();
+export const TOGGLE_LINE_NUMBERS_COMMAND: LexicalCommand<void> = createCommand();
 export const TOGGLE_TABS_COMMAND: LexicalCommand<void> = createCommand();

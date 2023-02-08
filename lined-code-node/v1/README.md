@@ -53,13 +53,13 @@ This includes creating code lines, tokens, and highlight nodes. Want to load cod
   ```
 
 Note: Need to call user attention to one or more lines in particular? No problem. 
-You can add discret line classes — such as "active" to one or more of your lines via the `ADD_DISCRETE_LINE_CLASSES_COMMAND` command or its sibling method. 
+You can add discrete line classes — such as "active" to one or more of your lines via the `ADD_DISCRETE_LINE_CLASSES_COMMAND` and `REMOVE_DISCRETE_LINE_CLASSES_COMMAND` commands or their sibling methods. 
 
 ### Text handling
 
 No one really wants to add pictures or interactive elements to code blocks. 
 
-This lead me to one of the `LinedCodeNodes` central tenets — most of its import, export, and update logic revolves around text. This makes life easy, as Lexical goes nuts when merging code tokens while users type. Debugging that sounded like a nightmare.
+This lead me to one of the `LinedCodeNode's` central tenets — most of its import, export, and update logic revolves around plain text, not nodes. This makes life much easier, as Lexical goes nuts when merging code tokens while users type. Debugging that seems like a nightmare.
 
 ## Guides and patterns
 
@@ -131,7 +131,7 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 - `getSettingsForCloning`
 - `getSettingsForExportJson`
 
-##### Ex. 1: Settings v. options
+##### Ex. 1: Options v. settings
 ```
 On creation, the `initialLanguage` option is converted into a `language` setting.
 
@@ -263,7 +263,7 @@ Change your `LinedCodeNode`'s styling on the fly.
 
 - fallback: `Prism`
 
-You should be able to use your own tokenizers with the `LinedCodeNode`. Simply pass a function that matches the Tokenizer interface when using `$createLinedCodeNode` or as a default option. 
+You should be able to use your own tokenizers with the `LinedCodeNode`. Simply pass a function that matches the `Tokenizer` interface when using `$createLinedCodeNode` or as a default option. 
 
 But note, I haven’t tested the function that normalizes the `tokenizer’s` tokens with any library other than Prism. Shout if it breaks and/or send me your function and maybe I can fix it.
 
@@ -284,6 +284,10 @@ tokens to the current code-text without creating new text nodes.
 
 ### Commands
 
+#### `CHANGE_THEME_NAME_COMMAND`
+
+Use this command to add a theme name to a `LinedCodeNode's` `themeName` property. You can use the name in your CSS to dynamically adjust your node's styling.
+
 #### `CODE_TO_PLAIN_TEXT_COMMAND`
 
 Use this command to convert an active `LinedCodeNode` to plain text. Each code line will be converted into a paragraph with text inside it. By contrast, when you convert the official `CodeNode` to plain text, it will place all the code and its line breaks in one paragraph. 
@@ -292,7 +296,7 @@ Use this command to convert an active `LinedCodeNode` to plain text. Each code l
 
 Use this command to change the active programming language.
 
-#### `TOGGLE_IS_LOCKED_BLOCK_COMMAND`
+#### `TOGGLE_BLOCK_LOCK_COMMAND`
 
 Use this command to toggle the `LinedCodeNode` between locked and unlocked. 
 
@@ -303,10 +307,6 @@ Use this command to toggle line numbers on and off within the `LinedCodeNode`.
 #### `TOGGLE_TABS_COMMAND`
 
 Use this command to toggle tabs on and off within the `LinedCodeNode`.
-
-#### `UPDATE_LANGUAGE_COMMAND`
-
-Use this command to change the `LinedCodeNode’s` language
 
 # LinedCodeLineNode
 

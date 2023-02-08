@@ -29,7 +29,7 @@ import {
   isCodeElement,
   isGitHubCodeTable,
 } from './Importers';
-import {$createLinedCodeTextNode, addClassNamesToElement, removeClassNamesFromElement} from './LinedCodeTextNode';
+import {$createLinedCodeTextNode} from './LinedCodeTextNode';
 import type {LinedCodeTextNode} from './LinedCodeTextNode';
 import type {
   LinedCodeLineNode,
@@ -42,8 +42,10 @@ import {getCodeLanguage} from './Prism';
 import type {NormalizedToken, Token, Tokenizer} from './Prism';
 import {
   $getLinesFromSelection,
+  addClassNamesToElement,
   addOptionOrNull,
   getNormalizedTokens,
+  removeClassNamesFromElement,
 } from './utils';
 import type { EditorThemeClassName } from 'lexical/LexicalEditor';
 
@@ -552,7 +554,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   }
 
   toggleBlockLock() {
-    // cmd: TOGGLE_BLOCK_LOCK
+    // cmd: TOGGLE_BLOCK_LOCK_COMMAND
     const writableCodeNode = this.getWritable();
     
     writableCodeNode.__isLockedBlock = !this.getLatest().__isLockedBlock;
