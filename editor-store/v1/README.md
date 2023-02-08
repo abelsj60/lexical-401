@@ -1,6 +1,6 @@
 # Editor Store
 
-## **Overview**
+## Overview
 
 The `editor` store makes Lexical editors portable. 
 
@@ -13,7 +13,7 @@ There are many good reasons to change this behavior:
 
 The `EditorStore` will make your `editors` — and their `historyState` — portable.
 
-## **Philosophy**
+## Philosophy
 
 True portability means storing `editor` instances *and* their history.
 
@@ -33,9 +33,9 @@ There are two Lexical quirks to know when making editors portable:
 - During an an active session, you must always pass an existing editor instance to newly mounting `LexicalComposers` via their `editor__DEPRECATED` property. There is no other way to preserve history at this time.
 - When remounting an instance, you'll want to stop Lexical from adding a new entry to the `undoStack` for the “initializing” editor. This is done by *merging* it with the current entry. Don’t worry — the `EditorStorePlugin` does this for you.
 
-## **Guides**
+## Guides
 
-### **Setup**
+### Setup
 
 - Copy the `EditorStore` files into your project.
 - Put the `EditorStore` wherever you want your store's context to start.
@@ -43,33 +43,33 @@ There are two Lexical quirks to know when making editors portable:
 - Make the `NestedEditorStorePlugin` a child of participating `LexicalNestedComposers`. 
 - Use the `useEditorStore` hook to access store records.
 
-## **API highlights**
+## API highlights
 
-- `getEditor`
+#### `getEditor`
 
   Pass a namespace to get an `editor` out of the store. 
 
-- `getHistory`
+#### `getHistory`
 
   Pass a namespace to get an `editor’s` `historyState` out of the store (rarely used).
 
-- `getKeychain`
+#### `getKeychain`
 
   Get a list of all existing `editor` records by key (AKA, `editor` namespace).
 
-- `getRecord`
+#### `getRecord`
 
   Pass a namespace to get an `editor` and its `historyState` out of the store.
 
-- `addRecord`
+#### `addRecord`
 
   Pass a namespace, `editor`, and `historyState` to create a new store record (handled by the `EditorStorePlugin` in almost all cases).
 
-- `deleteRecord`
+#### `deleteRecord`
 
   Pass a namespace to delete a record — `editor` and `historyState` — from the store. 
 
-- `resetStore`
+#### `resetStore`
 
   Delete all store records.
 

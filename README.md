@@ -1,4 +1,4 @@
-# **Lexical-4🔥1**
+# Lexical-4🔥1
 
 Hey there! 
 
@@ -58,13 +58,13 @@ But for now, what could possibly go wrong?
 
 ## Made with Lexical
 
-*Update it with yours...*
+*Just for fun, feel free to add yours...*
 
-**Publishing systems**
+### Publishing systems
 - [Storycraft](https://storycraft.pro/) | Telling stories AI
 - [aietal](https://aietal-coming-soon-o6ip6v5f4-eimenhmdt.vercel.app/) | Academic writing with AI
 - Mine | I'll try to fill this space in someday...
 
-**Content management systems**
+### Content management systems
 - [Dossier](https://www.dossierhq.dev/) | Build a personal headless CMS
 - [Payload plugin](https://github.com/AlessioGr/payload-plugin-lexical) | Use Lexical with Payload CMS
