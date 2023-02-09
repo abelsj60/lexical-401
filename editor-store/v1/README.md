@@ -19,7 +19,7 @@ True portability means storing `editor` instances *and* their history.
 
 This is the only way to keep the instance's undo and redo history intact. I add both to the store through the the `EditorStorePlugin` as new instances are created. 
 
-Note: I mount the `HistoryPlugin` for you. Don't add it yourself! 
+Note: I'll mount the `HistoryPlugin` for you. Don't add it yourself! 
 
 - The editor store is just a plain object. 
 - `Editors` are keyed onto it by `namespace`.
@@ -30,7 +30,7 @@ This means that React does not re-render whenever a change is made to the `edito
 
 There are two Lexical quirks to understand when making editors portable:
 
-- During an an active session, you must always pass an existing editor instance to newly mounting `LexicalComposers` via their `editor__DEPRECATED` property. There is no other way to preserve history at this time.
+- During an an active session, you must always pass an existing `editor` instance to newly mounting `LexicalComposers` via their `editor__DEPRECATED` property. There is no other way to preserve history at this time.
 - When remounting an instance, you'll want to stop Lexical from adding a new entry to the `undoStack` for the “initializing” editor. This is done by *merging* it with the current entry. Don’t worry — the `EditorStorePlugin` does this for you.
 
 ## Guides

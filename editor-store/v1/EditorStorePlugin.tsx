@@ -32,7 +32,7 @@ export function EditorStorePlugin({
     // history package to 'push' a new entry onto the undoStack. 
 
     // We can prevent this by telling it to 'merge' the new entry
-    // into the last on — i.e., replace it — instead.
+    // into the last one, thus replacing it instead.
     
     const isRelocating = mayBeRelocating && !hasRendered.current;
     if (isRelocating) editor._updateTags.add('history-merge');

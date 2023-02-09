@@ -34,12 +34,13 @@ interface Map {
 //  - don't include it if you haven't imported it
 //  - keys should match the library's internal key/import
 
+export const DEFAULT_CODE_LANGUAGE = 'javascript';
 export const codeLanguageMap: Map = {
   c: 'C',
   clike: 'C-like',
   css: 'CSS',
   html: 'HTML',
-  javascript: 'JavaScript',
+  [DEFAULT_CODE_LANGUAGE]: 'JavaScript',
   markdown: 'Markdown',
   markup: 'Markup',
   objectivec: 'Objective-C',
@@ -48,8 +49,6 @@ export const codeLanguageMap: Map = {
   sql: 'SQL',
   swift: 'Swift', 
 };
-
-export const DEFAULT_CODE_LANGUAGE = 'javascript';
 
 export const getCodeLanguage = (language: keyof typeof codeLanguageMap | string | null | undefined) => {
   const hasValue = language !== undefined && language !== null && typeof language !== 'number';

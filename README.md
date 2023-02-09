@@ -66,5 +66,5 @@ But for now, what could possibly go wrong?
 - Mine | I'll try to fill this space in someday...
 
 ### Content management systems
-- [Dossier](https://www.dossierhq.dev/) | Build a personal headless CMS
+- [Dossier](https://www.dossierhq.dev/) | Build your own headless CMS
 - [Payload plugin](https://github.com/AlessioGr/payload-plugin-lexical) | Use Lexical with Payload CMS
