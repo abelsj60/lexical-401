@@ -147,11 +147,11 @@ the `tokenizer` with `null`. No fuss, no muss...
 It's pretty easy to insert a `LinedCodeNode` into a Lexical editor:
 
 ```
-const formatCode = () => {
+const formatCode = (customOptions: LinedCodeNodeOptions) => {
   if (blockType !== "code") {
     editor.update(() => {
       const selection = $getSelection();
-      const codeNode = $createLinedCodeNode();
+      const codeNode = $createLinedCodeNode(customOptions);
 
       if ($isRangeSelection(selection)) {
         codeNode.insertInto(selection);
