@@ -1,8 +1,6 @@
 import type {
   Point,
   RangeSelection,
-  TextNode,
-  ParagraphNode,
 } from 'lexical';
 import {
   $getPreviousSelection,
@@ -16,8 +14,7 @@ import {$isLinedCodeLineNode} from './LinedCodeLineNode';
 import type {LinedCodeNode} from './LinedCodeNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
 import {
-  $getLinedCodeNode,
-  $getLinesFromSelection,
+  getLinesFromSelection,
   $isEndOfLastCodeLine,
   $isStartOfFirstCodeLine,
 } from './utils';
@@ -29,7 +26,7 @@ type MoveTypes = 'MOVE_TO_START' | 'MOVE_TO_END';
 function getTextKeyForNewChildren(point: Point) {
   // The selection is set to type 'element' when the line is empty.
   // When a tab or space is added, it should be updated to type
-  // 'text.' As we took over, it needs a helping hand...
+  // 'text.' As we've taken over, it needs a helping hand.
 
   if (point.offset === 0) {
     const pointNode = point.getNode();
@@ -52,8 +49,8 @@ function setPointAfterDent(
   point: Point,
   position: 'top' | 'bottom',
 ) {
-  // note: There can be a slight delay when returning the selection
-  // to 0 via the OUTDENT command. it would be nice to fix someday.
+  // Note: There can be a slight delay when returning the selection
+  // to 0 via the OUTDENT command. It would be nice to fix someday.
   const canUpdatePoint = isIndent
     ? line.getTextContentSize() > originalLineTextLength
     : originalLineTextLength > line.getTextContentSize();
@@ -137,7 +134,7 @@ export function handleDents(type: DentTypes): boolean {
     topPoint,
     bottomPoint,
     lineRange: linesForUpdate,
-  } = $getLinesFromSelection(selection);
+  } = getLinesFromSelection(selection);
 
   const isValid =
     $isLinedCodeLineNode(topLine) &&
@@ -184,7 +181,7 @@ export function handleBorders(type: ArrowTypes, event: KeyboardEvent): boolean {
 
   if (!$isRangeSelection(selection) || !selection.isCollapsed()) return false;
 
-  const {topLine: line} = $getLinesFromSelection(selection);
+  const {topLine: line} = getLinesFromSelection(selection);
 
   if ($isLinedCodeLineNode(line)) {
     const codeNode = line.getParent();
@@ -269,13 +266,13 @@ export function handleShiftingLines(
     bottomLine,
     topPoint,
     lineRange: linesForUpdate,
-  } = $getLinesFromSelection(selection);
+  } = getLinesFromSelection(selection);
   const isArrowUp = type === 'KEY_ARROW_UP_COMMAND';
   const isCollapsed = selection.isCollapsed();
 
   if ($isLinedCodeLineNode(topLine) && Array.isArray(linesForUpdate)) {
-    // From here, we may not be able to be able to move the lines around,
-    // but we want to return true either way to prevent
+    // From here, we may not be able to be able to move the lines 
+    // around, but we want to return true either way to prevent
     // the event's default behavior.
 
     event.preventDefault();
@@ -338,7 +335,7 @@ export function handleMoveTo(type: MoveTypes, event: KeyboardEvent): boolean {
     return false;
   }
 
-  const {topLine: line} = $getLinesFromSelection(selection);
+  const {topLine: line} = getLinesFromSelection(selection);
 
   if ($isLinedCodeLineNode(line)) {
     const isMoveToStart = type === 'MOVE_TO_START';
@@ -346,7 +343,7 @@ export function handleMoveTo(type: MoveTypes, event: KeyboardEvent): boolean {
     event.preventDefault();
     event.stopPropagation();
 
-    const {topPoint} = $getLinesFromSelection(selection);
+    const {topPoint} = getLinesFromSelection(selection);
     const lineOffset = line.getLineOffset(topPoint);
     const firstCharacterIndex = line.getFirstCharacterIndex(lineOffset);
     const lastCharacterIndex = line.getTextContentSize();

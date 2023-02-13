@@ -10,7 +10,9 @@ import type {
   LexicalNode,
   NodeKey,
   ParagraphNode,
+  RangeSelection,
   Spread,
+  TextNode as LexicalTextNode,
 } from 'lexical';
 import {
   $isTextNode,
@@ -39,13 +41,21 @@ import {
   $isLinedCodeLineNode,
 } from './LinedCodeLineNode';
 import {getCodeLanguage} from './Prism';
+import { $setBlocksType_experimental } from "@lexical/selection";
 import type {NormalizedToken, Token, Tokenizer} from './Prism';
 import {
-  $getLinesFromSelection,
+  getLinesFromSelection,
   addClassNamesToElement,
   addOptionOrNull,
+  getLinedCodeNodesFromSelection,
   getNormalizedTokens,
+  getParamsToSetSelection,
+  // normalizeOffsets,
+  normalizePoints,
   removeClassNamesFromElement,
+  getLineCarefully,
+  getCodeNodeFromEntries,
+  $transferSelection,
 } from './utils';
 import type { EditorThemeClassName } from 'lexical/LexicalEditor';
 
@@ -75,7 +85,7 @@ export interface LinedCodeNodeOptions_Serializable extends LinedCodeNodeOptions 
 type SerializedLinedCodeNode = Spread<
   {
     options: LinedCodeNodeOptions_Serializable;
-    type: 'lined-code';
+    type: 'code-node';
     version: 1;
   },
   SerializedCodeNode
@@ -109,7 +119,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   __tokenizer: Tokenizer | null;
 
   static getType() {
-    return 'lined-code';
+    return 'code-node';
   }
 
   static clone(node: LinedCodeNode): LinedCodeNode {
@@ -201,8 +211,10 @@ export class LinedCodeNode extends TypelessCodeNode {
     const self = this.getLatest();
     const language = self.getLanguage();
     const prevLanguage = prevNode.getLanguage();
+
     // Why not use the getter? Well, because the getter uses .getLatest(),
     // which in this case, gets us the current value. So? We cheat!
+
     const prevThemeName = prevNode.__themeName;
     const prevLineNumbers = prevNode.__lineNumbers;
     const {lineNumbers, theme: codeNodeTheme, themeName} = self.getSettings();
@@ -249,10 +261,11 @@ export class LinedCodeNode extends TypelessCodeNode {
     return {
       // Typically <pre> is used for code blocks, and <code> for inline code styles
       // but if it's a multi line <code> we'll create a block. Pass through to
-      // inline format handled by TextNode otherwise
+      // inline format handled by TextNode otherwise.
+
       code: (node: Node) => {
         const hasPreElementParent =
-          node.parentElement instanceof HTMLPreElement;
+          node.parentElement instanceof HTMLPreElement; // let the pre property deal with it below!
         const isMultiLineCodeElement =
           node.textContent != null && /\r?\n/.test(node.textContent);
 
@@ -266,7 +279,7 @@ export class LinedCodeNode extends TypelessCodeNode {
         return null;
       },
       div: (node: Node) => {
-        const isCode = isCodeElement(node as HTMLDivElement);
+        const isCode = isCodeElement(node as HTMLDivElement); // domNode is a <div> since we matched it by nodeName
 
         if (isCode) {
           return {
@@ -278,7 +291,7 @@ export class LinedCodeNode extends TypelessCodeNode {
         return null;
       },
       pre: (node: Node) => {
-        const isPreElement = node instanceof HTMLPreElement;
+        const isPreElement = node instanceof HTMLPreElement; // domNode is a <pre> element since we matched it by nodeName
 
         if (isPreElement) {
           return {
@@ -314,8 +327,8 @@ export class LinedCodeNode extends TypelessCodeNode {
     return {
       ...super.exportJSON(),
       options: this.getLatest().getSettingsForExportJSON(),
-      type: 'lined-code' as 'code', // not cool, necessary!
-      version: 1 as 1, // ridiculous, also necessary!
+      type: 'code-node' as 'code', // not cool, but TS says necessary!
+      version: 1 as 1, // ridiculous, but TS also says necessary!
     };
   }
 
@@ -391,8 +404,9 @@ export class LinedCodeNode extends TypelessCodeNode {
     const text = writableLine.getTextContent();
 
     if (text.length > 0) {
-      // lines are short, we'll just replace our
-      // nodes for now. can optimize later.
+      // Lines are short, we'll just replace our
+      // nodes for now. Can optimize later.
+
       self.replaceLineCode(text, writableLine);
       return true;
     }
@@ -412,41 +426,108 @@ export class LinedCodeNode extends TypelessCodeNode {
     }, [] as LinedCodeLineNode[]);
   }
 
-  convertToPlainText(oneLine?: boolean): boolean {
-    // cmd: CODE_TO_PLAIN_TEXT_COMMAND
-    const root = $getRoot();
-    const writableRoot = root.getWritable()
+  convertToPlainText(updateSelection?: boolean): boolean {
+    const writableRoot = $getRoot().getWritable();
 
     if ($isRootNode(writableRoot)) {
       const writableCodeNode = this.getWritable();
       const children = writableCodeNode.getChildren();
       const index = writableCodeNode.getIndexWithinParent();
       const rawText = writableCodeNode.getRawText(children);
-      let paragraphs = [] as LexicalNode[];
 
-      // must remove before getting plainTextNodes to ensure you get
-      // paragraphs not code lines from the nodeReplacer
+      let topLineIndex = -1;
+      let topLineOffset = -1;
+
+      let bottomLineIndex = -1;
+      let bottomLineOffset = -1;
+      
+      // 1. Save the last node/selection data so we can update it later.
+
+      if (updateSelection) {
+        const selection = $getSelection();
+        
+        if ($isRangeSelection(selection)) {
+          const { anchor, focus } = selection;
+          const isBackward = selection.isBackward();
+
+          const {topPoint, bottomPoint} = normalizePoints(anchor, focus, isBackward);
+          const topNode = topPoint.getNode();
+          const bottomNode = bottomPoint.getNode();
+
+          const codeNodes = getLinedCodeNodesFromSelection($getSelection());
+          const topCodeNode = getCodeNodeFromEntries(topNode, codeNodes);
+          const bottomCodeNode = getCodeNodeFromEntries(bottomNode, codeNodes);
+
+          if (topCodeNode) {
+            const topLine = getLineCarefully(topNode);
+
+            if ($isLinedCodeLineNode(topLine)) {
+              topLineOffset = topLine.getLineOffset(topPoint);
+              topLineIndex = topLine.getIndexWithinParent();
+  
+              if (!bottomCodeNode && topCodeNode === bottomCodeNode) {
+                bottomLineOffset = topLineOffset;
+                bottomLineIndex = topLineIndex; 
+              }
+            }
+          }
+
+          if (bottomCodeNode) {
+            const bottomLine = getLineCarefully(bottomNode);
+
+            if ($isLinedCodeLineNode(bottomLine)) {
+              bottomLineOffset = bottomLine.getLineOffset(bottomPoint);
+              bottomLineIndex = bottomLine.getIndexWithinParent();
+            }
+          }
+        }
+      }
+
+      // 2. Remove the old CodeNode, build new paragraphs, and splice into place.
 
       writableCodeNode.remove();
 
-      if (oneLine) {
+      const paragraphs = rawText.split('\n').reduce((lines, line) => {
         const paragraph = $createParagraphNode();
-        paragraph.append($createTextNode(rawText));
-        paragraphs = [paragraph];
-      } else {
-        paragraphs = rawText.split('\n').reduce((lines, line) => {
-          const paragraph = $createParagraphNode();
-          const textNode = $createTextNode(line || '');
+        const textNode = $createTextNode(line || '');
 
-          paragraph.append(textNode);
-          lines.push(paragraph);
+        paragraph.append(textNode);
+        lines.push(paragraph);
 
-          return lines;
-        }, [] as ParagraphNode[]);
-      }
+        return lines;
+      }, [] as ParagraphNode[]);
 
       writableRoot.splice(index, 0, paragraphs);
-      paragraphs[0].selectStart();
+
+      // 3. When called upon, we can now restore the selection!
+
+      if (updateSelection) {
+        const nextSelection = $getSelection();
+        
+        if ($isRangeSelection(nextSelection)) {
+          // Get a new selection. It's stale after .remove and the Root
+          // had a different state when we got the last one...
+
+          const { anchor, focus } = nextSelection;
+          const isNextSelectionBackward = nextSelection.isBackward();
+          const {
+            topPoint: nextTopPoint, 
+            bottomPoint: nextBottomPoint
+          } = normalizePoints(anchor, focus, isNextSelectionBackward);
+          
+          if (topLineOffset > -1) {
+            const paragraph = paragraphs[topLineIndex];
+            const textNode = paragraph.getFirstChild<LexicalTextNode>();
+            nextTopPoint.set(...getParamsToSetSelection(paragraph, textNode, topLineOffset));
+          }
+
+          if (bottomLineOffset > -1) {
+            const paragraph = paragraphs[bottomLineIndex];
+            const textNode = paragraph.getFirstChild<LexicalTextNode>();
+            nextBottomPoint.set(...getParamsToSetSelection(paragraph, textNode, bottomLineOffset));
+          }
+        }
+      }
 
       return true;
     }
@@ -481,7 +562,7 @@ export class LinedCodeNode extends TypelessCodeNode {
           topLine: line,
           lineRange: linesForUpdate,
           splitText,
-        } = $getLinesFromSelection(selection);
+        } = getLinesFromSelection(selection);
 
         if ($isLinedCodeLineNode(line)) {
           const lexicalNodes: LexicalNode[] = [];
@@ -530,6 +611,102 @@ export class LinedCodeNode extends TypelessCodeNode {
     }
 
     return false;
+  }
+
+  insertInto(selection?: RangeSelection) {
+    const writableSelf = this.getWritable();
+
+    if ($isRangeSelection(selection)) {
+      const { anchor, focus } = selection;
+      const isBackward = selection.isBackward();
+
+      const {topPoint, bottomPoint} = normalizePoints(anchor, focus, isBackward);
+      const topNode = topPoint.getNode();
+      const bottomNode = bottomPoint.getNode();
+
+      const lineSet = new Set<LinedCodeLineNode>();
+
+      const codeNodes = getLinedCodeNodesFromSelection($getSelection());
+      const topCodeNode = getCodeNodeFromEntries(topNode, codeNodes);
+      const bottomCodeNode = getCodeNodeFromEntries(bottomNode, codeNodes);
+
+      let topLineIndex = -1;
+      let topLineOffset = topPoint.offset;
+
+      let bottomLineIndex = -1;
+      let bottomLineOffset = bottomPoint.offset;
+
+      let topLinesToMerge: LinedCodeLineNode[] = [];
+      let bottomLinesToMerge: LinedCodeLineNode[] = [];
+
+      if (topCodeNode) {
+        const topLine = getLineCarefully(topNode);
+        const codeNodeLength = topCodeNode.getChildrenSize();
+
+        if ($isLinedCodeLineNode(topLine)) {
+          topLineIndex = topLine.getIndexWithinParent();
+          topLineOffset = topLine.getLineOffset(topPoint);
+        }
+
+        if (codeNodeLength > topLineIndex) {
+          const currentLines = topCodeNode.getChildren<LinedCodeLineNode>();
+          topLinesToMerge = currentLines.slice(0, topLineIndex);
+        }
+      }
+
+      if (bottomCodeNode) {
+        const bottomLine = getLineCarefully(bottomNode);
+        const codeNodeLength = bottomCodeNode.getChildrenSize();
+
+        if ($isLinedCodeLineNode(bottomLine)) {
+          bottomLineIndex = bottomLine.getIndexWithinParent();
+          bottomLineOffset = bottomLine.getLineOffset(bottomPoint);
+        }
+
+        if (codeNodeLength > bottomLineIndex) {
+          const startingIndex = bottomLineIndex + 1;
+          const currentLines = bottomCodeNode.getChildren<LinedCodeLineNode>();
+          const lastCurrentLine = currentLines[currentLines.length - 1];
+          const lastLineTextLength = lastCurrentLine.getTextContentSize();
+
+          // Edge case: Adjust offset if last line is too short. selections... 
+          if (lastLineTextLength < bottomLineOffset) bottomLineOffset = lastLineTextLength;
+          
+          bottomLinesToMerge = currentLines.slice(startingIndex, codeNodeLength);
+        }
+      }
+
+      $setBlocksType_experimental(selection, () => {
+        const line = $createLinedCodeLineNode();
+        lineSet.add(line)
+        return line;
+      });
+
+      const newLines = Array.from(lineSet);
+      const firstNewLine = newLines[0];
+      const nodeToReplace = $isLinedCodeNode(topCodeNode) 
+        ? firstNewLine.getParent() as LinedCodeNode 
+        : firstNewLine;
+      
+      writableSelf.append(...topLinesToMerge, ...newLines, ...bottomLinesToMerge);
+
+      // FYI: .replace burns selection. Restore it with a new one..!
+      nodeToReplace.replace(writableSelf); 
+      
+      // Note: Currently, I don't perfectly transfer uncollapsed selection 
+      // points when the anchor or focus is in a CodeNode (topCodeNode or
+      // bottomCodeNode). It's decent enough to work and feels fairly
+      // natural, but it's not 100%. What happens is that selectNext
+      // will move the current offsets to the first and last lines.
+      // Doing better was nightmarish. I gave up! Apologies...
+
+      const nextTopLine = writableSelf.getFirstChild() as LinedCodeLineNode;
+      const nextBottomLine = writableSelf.getLastChild() as LinedCodeLineNode;
+      $transferSelection(topLineOffset, bottomLineOffset, nextTopLine, nextBottomLine);
+
+      // gc: setBlocks needs help processing shadowRoot
+      codeNodes.forEach((codeNode) => codeNode.remove());
+    }
   }
 
   changeThemeName(name: string) {
@@ -641,7 +818,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   }
 
   getNormalizedTokens(plainText: string): NormalizedToken[] {
-    // this allows for diffing w/o wasting node keys
+    // This allows for diffing w/o wasting node keys.
     if (plainText.length === 0) return [];
 
     const self = this.getLatest();
@@ -668,7 +845,7 @@ export class LinedCodeNode extends TypelessCodeNode {
     const normalizedTokens = self.getNormalizedTokens(text);
     const children = latestLine.getChildren() as LinedCodeTextNode[];
 
-    // why? empty text strings can cause lengths to mismatch on paste
+    // Why? Empty text strings can cause lengths to mismatch on paste.
     if (children.length !== normalizedTokens.length) return false;
 
     return children.every((child, idx) => {
@@ -689,7 +866,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   }
 
   getLanguage() {
-    // note: highly specific method included for parity with 
+    // Note: highly specific method included for parity with 
     // official CodeNode
     return this.getLatest().getSettings().language;
   }

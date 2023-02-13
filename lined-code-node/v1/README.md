@@ -70,22 +70,13 @@ This lead me to one of the `LinedCodeNode's` central tenets — most of its imp
 - Spread `getLinedCodeNodes()` into your `LexicalComposer’s` nodes array.
 - Add default options to `getLinedCodeNodes()` as a param. Internal fallbacks exist.
 
-#### `getLinedCodeNodes`
-
-
-All `LinedCodeNode` nodes are registered on the `LexicalComposer` via a helper function. 
-
-Simply spread it into place and pass it your default options. If you don't pass defaults, it'll use a set of built-in fallbacks.
-
-```
-nodes: [
-  ...,
-  ...getLinedCodeNodes({
-    activateTabs: true,
-    theme: linedCodeNodeTheme || defaultLinedCodeNodeTheme,
-  })
-]
-```
+      nodes: [
+        ...,
+        ...getLinedCodeNodes({ // DEFAULT VALUES
+          activateTabs: true,
+          theme: linedCodeNodeTheme || defaultLinedCodeNodeTheme,
+        })
+      ]
 
 ### Options v. settings
 
@@ -132,23 +123,88 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 - `getSettingsForExportJson`
 
 ##### Ex. 1: Options v. settings
-```
-On creation, the `initialLanguage` option is converted into a `language` setting.
 
-This is a problem for reconciliation, as we need to pass the current node’s state forward. 
-To do this, I pass `language` forward as an `initialLanguage` option via 
-`getSettingsForExportJson`.
+```
+On creation, the `initialLanguage` options is converted into the `language` setting.
+
+This is a problem for reconciliation, as we need to pass the current
+node’s state forward. To do this, I pass `language` forward as an 
+`initialLanguage` option via `getSettingsForExportJson`.
 ```
 
 ##### Ex. 2: Unserializable properties
 ```
-The `LinedCodeNode` holds its `tokenizer` as a property. 
+Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. Unfortunately, Lexical bans unserializeble properties!
 
-This is a problem, as Lexical doesn't allow function properties. They aren't serializable. 
-On export, `getSettingsForExportJSON` fixes the issue by replacing the `tokenizer` with 
-`null`.
+It's not a problem...!
+
+On export, `getSettingsForExportJSON` fixes the problem by replacing 
+the `tokenizer` with `null`. No fuss, no muss...
 ```
 
+### Editor insertion
+
+It's pretty easy to insert a `LinedCodeNode` into a Lexical editor:
+
+```
+const formatCode = () => {
+  if (blockType !== "code") {
+    editor.update(() => {
+      const selection = $getSelection();
+      const codeNode = $createLinedCodeNode();
+
+      if ($isRangeSelection(selection)) {
+        codeNode.insertInto(selection);
+      }
+    });
+  }
+
+  setBlockType('code');
+};
+```
+
+(This modified function comes straight from the Playground.)
+
+Note: `.insertInto` uses `setBlocksType_experimental`, which in turn uses `.replace`.  `.replace` doesn't seem to expect the `TextNodes` in an `ElementNode` to change on replacement. This generally causes Lexical to lose the `selection` when running `.replace` with the `LinedCodeNode`. 
+
+Don't worry. You dont need to do anything. `.insertInto` already updates the `selection` manually. Still, it's worth knowing about the problem should you want to customize these nodes for yourself. 
+
+### Block transforms
+
+It's also fairly easy to convert a `LinedCodeNode` to something else:
+
+```
+const formatParagraph = () => {
+  if (blockType !== "paragraph") {
+    editor.update(() => {
+      const nextSelection = $convertCodeToPlainText($getSelection());
+      
+      if ($isRangeSelection(nextSelection) || DEPRECATED_$isGridSelection(nextSelection)) {
+        $setBlocksType_experimental(nextSelection, () => $createParagraphNode());
+      }
+    });
+  }
+
+  setBlockType('paragraph');
+};
+```
+
+(This modified function comes straight from the Playground.)
+
+Start by normalizing the `LinedCodeNode` via `$convertCodeToPlainText(...)`.
+  - This transforms the lines of code into separate paragraphs.
+  - It also returns an updated `selection`. The `nextSelection` will apply the last offsets to the new node. If the `selection` is a range, and the `anchor` or `focus` is in an existing `LinedCodeNode`, the offsets will be applied to the new node's first and last lines.
+
+Now, call `$setBlocksType_experimental` to convert your new paragraphs into any node supported by `setBlocks`. You could also call a command — or anything you want. 
+  - Paragraph normalization should make it easy for your users to convert their `LinedCodeNodes` into any other format without any unexpected errors. 
+
+### Markdown
+
+At present, Markdown shortcuts can't be turned off inside the `LinedCodeNode`.
+
+I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898, but have not yet found an accord with core.
+
+I have left the PR's code in the `LinedCodeNode` for now. If you want, you can patch the pull request's two updates into Lexical to correct the problem right now. I'll update these docs when I know more.
 ## API highlights
 
 ### Options
@@ -288,10 +344,6 @@ tokens to the current code-text without creating new text nodes.
 
 Use this command to add a theme name to a `LinedCodeNode's` `themeName` property. You can use the name in your CSS to dynamically adjust your node's styling.
 
-#### `CODE_TO_PLAIN_TEXT_COMMAND`
-
-Use this command to convert an active `LinedCodeNode` to plain text. Each code line will be converted into a paragraph with text inside it. By contrast, when you convert the official `CodeNode` to plain text, it will place all the code and its line breaks in one paragraph. 
-
 #### `SET_LANGUAGE_COMMAND`
 
 Use this command to change the active programming language.
@@ -341,9 +393,4 @@ You generally won't interact with this node directly.
 ```
 Author: James Abels
 Contact: See main README
-
-Notes: 
-
-I've filed a PR to update `$setBlocksType_experimental` for this node. In the meantime, I've added it to 
-lexical-401. I haven't debugged `$wrapNodes` for this node.
 ```

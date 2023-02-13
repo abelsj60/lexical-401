@@ -1,7 +1,5 @@
-import {
-  $createLineBreakNode,
-  TextNode,
-} from 'lexical';
+import { $createLineBreakNode, TextNode } from 'lexical';
+
 import type {
   DOMExportOutput,
   EditorConfig,
@@ -126,9 +124,6 @@ export class LinedCodeTextNode extends TextNode {
   static importJSON(
     serializedNode: SerializedLinedCodeTextNode,
   ): LinedCodeTextNode {
-    // note: can't fix blank strings here b/c there's no way to remove
-    // the node that's being created from the function's return value
-    // may be able to fix in CodeLineNode or in a core command
     const node = $createLinedCodeTextNode(
       serializedNode.text,
       serializedNode.highlightType,
@@ -147,9 +142,10 @@ export class LinedCodeTextNode extends TextNode {
     if (element) {
       const isBlankString = element.innerText === '';
       
-      // If the point is at the last character of a line, Lexical
-      // will create a highlightNode with a blank string ('').
-      // This is no good, so we counteract it here.
+      // If the point is on the last line character, Lexical
+      // will create a textNode with a blank string ('').
+      // This isn't good, so we counteract it here.
+
       const hasPreviousSiblings = this.getPreviousSiblings().length > 0;
 
       if (isBlankString && hasPreviousSiblings) {
@@ -191,6 +187,10 @@ export class LinedCodeTextNode extends TextNode {
 
   canContainTabs(): boolean {
     return true;
+  }
+
+  canContainMarkdown(): boolean {
+    return false;
   }
 }
 

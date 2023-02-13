@@ -30,9 +30,9 @@ interface Map {
   [key: string]: string | undefined
 }
 
-// map format: { value: label }
-//  - don't include it if you haven't imported it
-//  - keys should match the library's internal key/import
+// Map format: { value: label }
+//  - Don't include it if you haven't imported it!
+//  - Keys should match the library's internal key/import...
 
 export const DEFAULT_CODE_LANGUAGE = 'javascript';
 export const codeLanguageMap: Map = {

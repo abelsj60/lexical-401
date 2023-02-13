@@ -1,6 +1,11 @@
 import type {
+  GridSelection,
+  LexicalNode,
+  NodeSelection,
+  ParagraphNode,
   Point,
   RangeSelection,
+  TextNode as LexicalTextNode,
 } from 'lexical';
 import {
   $getSelection,
@@ -39,7 +44,7 @@ function getLineFromPoint(point: Point): LinedCodeLineNode | null {
   return null;
 }
 
-export function $getLinesFromSelection(selection: RangeSelection) {
+export function getLinesFromSelection(selection: RangeSelection) {
   const anchor = selection.anchor;
   const focus = selection.focus;
 
@@ -104,6 +109,75 @@ export function $getLinedCodeNode(): LinedCodeNode | null {
   }
 
   return null;
+}
+
+export function isInLinedCodeNodeFamily(node: LexicalNode) {
+  return $isLinedCodeTextNode(node) || $isLinedCodeLineNode(node) || $isLinedCodeNode(node);
+}
+
+export function getLinedCodeNodesFromSelection(
+  selection: RangeSelection | NodeSelection | GridSelection | null
+) {
+  const codeSet = new Set<LinedCodeNode>();
+  const linedCodeNodeFamilyNodes = selection?.getNodes().filter((node) => {
+    return isInLinedCodeNodeFamily(node);
+  });
+
+  linedCodeNodeFamilyNodes?.forEach((node) => {
+    if ($isLinedCodeNode(node)) {
+      if (!codeSet.has(node)) {
+        codeSet.add(node);
+      }
+    }
+
+    if ($isLinedCodeLineNode(node)) {
+      const codeNode = node.getParent();
+
+      if ($isLinedCodeNode(codeNode)) {
+        if (!codeSet.has(codeNode)) {
+          codeSet.add(codeNode);
+        }
+      }
+    }
+
+    if ($isLinedCodeTextNode(node)) {
+      const line = node.getParent();
+
+      if ($isLinedCodeLineNode(line)) {
+        const codeNode = line.getParent();
+        
+        if ($isLinedCodeNode(codeNode)) {
+          if (!codeSet.has(codeNode)) {
+            codeSet.add(codeNode);
+          }
+        }
+      }
+    }
+  });
+
+  return Array.from(codeSet);
+}
+
+export function getCodeNodeFromEntries(
+  pointNode: LexicalNode, 
+  codeNodes: LinedCodeNode[]
+) {
+  return codeNodes.find((codeNode) => {
+    const ln = getLineCarefully(pointNode);
+
+    return codeNode.getChildren<LinedCodeLineNode>().filter((line) => {
+      return ln !== null && line.getKey() === ln.getKey();
+    }).length > 0
+  });
+};
+
+export function $convertCodeToPlainText(
+  selection: RangeSelection | NodeSelection | GridSelection | null
+) {
+  const codeNodes = getLinedCodeNodesFromSelection(selection);
+  codeNodes.forEach((codeNode) => codeNode.convertToPlainText(true));
+
+  return $getSelection();
 }
 
 export function $isStartOfFirstCodeLine(line: LinedCodeLineNode) {
@@ -244,4 +318,60 @@ export function removeClassNamesFromElement(
       element.classList.remove(...className.split(' '));
     }
   });
+}
+
+export function getParamsToSetSelection (
+  block: ParagraphNode, 
+  child: LexicalTextNode | null, 
+  offset: number | null
+): [string, number, 'text' | 'element'] {
+  const isEmptyLine = child === null;
+  if (isEmptyLine) return [block.getKey(), 0, 'element'];
+  return [child.getKey(), offset as number, 'text'];
+}
+
+export function normalizePoints(
+  anchor: Point, 
+  focus: Point, 
+  isBackward: boolean
+): { topPoint: Point; bottomPoint: Point } {
+  return {
+    topPoint: !isBackward ? anchor : focus,
+    bottomPoint: !isBackward ? focus : anchor
+  }
+}
+
+export function getLineCarefully(node: LexicalNode) {
+  const lineNode = $isLinedCodeTextNode(node)
+    ? node.getParent() as LinedCodeLineNode
+    : $isLinedCodeLineNode(node)
+    ? node as LinedCodeLineNode
+    : null;
+    
+  return lineNode;
+};
+
+export function $transferSelection(
+  anchorOffset: number, 
+  focusOffset: number, 
+  topLine: LinedCodeLineNode | null, 
+  bottomLine: LinedCodeLineNode | null
+) {
+  const selection = $getSelection();
+
+  if ($isRangeSelection(selection)) {
+    if ($isLinedCodeLineNode(topLine)) {
+      if (selection.isCollapsed()) {
+        topLine.selectNext(anchorOffset);
+      } else {
+        if ($isLinedCodeLineNode(bottomLine)) {
+          const { child: topChild, childOffset: topOffset } = topLine.getChildFromLineOffset(anchorOffset);
+          const { child: bottomChild, childOffset: bottomOffset } = bottomLine.getChildFromLineOffset(focusOffset);
+
+          selection.anchor.set(...getParamsToSetSelection(topLine, topChild, topOffset));
+          selection.focus.set(...getParamsToSetSelection(bottomLine, bottomChild, bottomOffset));
+        }
+      }
+    }
+  }
 }

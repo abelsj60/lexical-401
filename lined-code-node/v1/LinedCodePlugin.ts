@@ -1,25 +1,12 @@
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_LOW, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_TAB_COMMAND, MOVE_TO_END, MOVE_TO_START, PASTE_COMMAND } from 'lexical';
 import * as React from 'react';
 
-import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  KEY_ARROW_DOWN_COMMAND,
-  KEY_ARROW_UP_COMMAND,
-  MOVE_TO_END,
-  MOVE_TO_START,
-  COMMAND_PRIORITY_EDITOR,
-  KEY_TAB_COMMAND,
-  PASTE_COMMAND,
-  $getNodeByKey,
-} from 'lexical';
 import type {
   LexicalEditor,
 } from 'lexical';
 import {
   CHANGE_THEME_NAME_COMMAND,
-  CODE_TO_PLAIN_TEXT_COMMAND,
   TOGGLE_BLOCK_LOCK_COMMAND,
   TOGGLE_LINE_NUMBERS_COMMAND,
   TOGGLE_TABS_COMMAND,
@@ -33,16 +20,17 @@ import {
 import {$isLinedCodeTextNode, LinedCodeTextNode} from './LinedCodeTextNode';
 import {$isLinedCodeLineNode, LinedCodeLineNode} from './LinedCodeLineNode';
 import {$isLinedCodeNode, LinedCodeNode} from './LinedCodeNode';
-import {$getLinedCodeNode, $getLinesFromSelection} from './utils';
+import {$getLinedCodeNode, getLinesFromSelection} from './utils';
 
 function removeHighlightsWithNoTextAfterImportJSON(
   highlightNode: LinedCodeTextNode,
 ) {
-  // needed because exportJSON may export an empty highlight node when
+  // Needed because exportJSON may export an empty highlight node when
   // it has a length of one. exportDOM has been fixed via PR. But...
-  // exportJSON seems harder to fix, so i'm handling it here. also
-  // note, i can't fix it in a 'created' mutation because this
-  // seems to kill history (it dies after .remove runs).
+  // exportJSON seems harder to fix, so I'm handling it here. Also
+  // note, I can't fix it in a 'created' mutation because this
+  // seems to kill history (it'll die after .remove runs).
+  
   const isBlankString = highlightNode.getTextContent() === '';
 
   if (isBlankString) {
@@ -61,7 +49,7 @@ function updateHighlightsWhenTyping(highlightNode: LinedCodeTextNode) {
 
       if ($isLinedCodeNode(codeNode)) {
         if (!codeNode.isLineCurrent(line)) {
-          const {topPoint} = $getLinesFromSelection(selection);
+          const {topPoint} = getLinesFromSelection(selection);
           // Get lineOffset before update. It may change...
           const lineOffset = line.getLineOffset(topPoint);
           
@@ -75,10 +63,9 @@ function updateHighlightsWhenTyping(highlightNode: LinedCodeTextNode) {
               // parent here if added via Enter key.
 
               if ($isLinedCodeNode(anchorNode.getParent())) {
-                // Selection gets lost when an existing toke/highlight node
+                // Selection gets lost when an existing LinedCodeTextNode
                 // changes due to character insertion. Figuring out why
-                // it doesn't track properly is a rigamarole. This is
-                // the alternative — manual update.
+                // is a rigamarole. This is the bespoke alternative.
 
                 line.selectNext(lineOffset);
               }
@@ -102,12 +89,10 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
       const codeNode = $getLinedCodeNode();
 
       if ($isLinedCodeNode(codeNode)) {
-        // Unlike the official CodeNode, this version's uses an
+        // Unlike the official CodeNode, this version uses an
         // updateLineCode method that rejects if the calling
-        // line is up-to-date, i.e., it's self-managing.
-
-        // Thus, we don't need to pass skipTransforms via a
-        // nested editor update here.
+        // line is up-to-date. Thus, we don't need to pass 
+        // skipTransforms via a nested editor update.
 
         updateHighlightsWhenTyping(node);
         removeHighlightsWithNoTextAfterImportJSON(node);
@@ -125,12 +110,12 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
         for (const [key, type] of mutations) {
           const selection = $getSelection();
 
-          if ($isRangeSelection(selection)) {
-            // not currently testing focus or !isCollapsed()
-            const anchorKey = selection.anchor.key;
+          if (type === 'created') {
+            if ($isRangeSelection(selection)) {
+              // not currently testing focus or !isCollapsed()
+              const anchorKey = selection.anchor.key;
             
-            if (anchorKey === key) {
-              if (type === 'created') {
+              if (anchorKey === key) {
                 const node = $getNodeByKey(key);
       
                 if ($isLinedCodeNode(node)) {
@@ -177,19 +162,6 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
 
         if ($isLinedCodeNode(codeNode)) {
           codeNode.changeThemeName(payload);
-        }
-
-        return true;
-      },
-      COMMAND_PRIORITY_LOW,
-    ),
-    editor.registerCommand(
-      CODE_TO_PLAIN_TEXT_COMMAND,
-      (payload) => {
-        const codeNode = $getLinedCodeNode();
-
-        if ($isLinedCodeNode(codeNode)) {
-          codeNode.convertToPlainText(payload);
         }
 
         return true;
@@ -249,7 +221,7 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
           $isLinedCodeNode(codeNode) && clipboardData !== null;
 
         if (isPasteInternal) {
-          // overrides pasting inside an active code node ("internal pasting")
+          // Overrides pasting inside an active CodeNode ("internal pasting")
           return codeNode.insertClipboardData_INTERNAL(clipboardData, editor);
         }
 

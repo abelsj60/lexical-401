@@ -18,7 +18,7 @@ import {$createLinedCodeNode} from './LinedCodeNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
 import type { LinedCodeTextNode } from './LinedCodeTextNode';
 import { $isLinedCodeTextNode } from './LinedCodeTextNode';
-import {$getLinesFromSelection, addClassNamesToElement, isTabOrSpace, removeClassNamesFromElement} from './utils';
+import {getLinesFromSelection, addClassNamesToElement, isTabOrSpace, removeClassNamesFromElement} from './utils';
 
 type SerializedLinedCodeLineNode = Spread<
   {
@@ -50,9 +50,10 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
   constructor(discreteLineClasses?: string, key?: NodeKey) {
     super(key);
 
-    // You'll generally only set this in response to user interaction, not
-    // during initialization. We include it as a constructor option so
-    // it .clone and .updateDOM keep it during reconciliation.
+    // This generally isn't set during initialization. It's set during
+    // user interaction. However, it's included in the constructor 
+    // so .clone and .updateDOM it during reconciliation.
+
     this.__discreteLineClasses = discreteLineClasses || '';
   }
 
@@ -153,7 +154,6 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
 
   // Mutation
 
-  // Note: Only append code for one line, not more!
   append(...nodesToAppend: LexicalNode[]): this {
     const self = this.getLatest();
     let codeNode: LinedCodeNode | null;
@@ -165,8 +165,9 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
         codeNode = self.getParent();
     
         if (!$isLinedCodeNode(codeNode)) {
-          // This means the line's new. It hasn't been
-          // appended to a CodeNode yet. Make one!
+          // If we're here, the line's new. It hasn't been
+          // appended to a CodeNode yet. We'll make one
+          // so we can use its methods...
           
           codeNode = $createLinedCodeNode();
         }
@@ -204,7 +205,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
         topPoint,
         splitText = [],
         topLine: line,
-      } = $getLinesFromSelection(selection);
+      } = getLinesFromSelection(selection);
   
       if ($isLinedCodeLineNode(line)) {
         const writableLine = line.getWritable();
@@ -220,9 +221,9 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
           newLine.append(...code);
           writableLine.insertAfter(newLine);
   
-          // Lexical can't seem to select the end of a newLine's leading 
-          // whitespace, so we pair this method with a mutation  
-          // listener ('created') and set it ourselves. 
+          // Lexical can't 'select' the a newLine's leading whitespace 
+          // on its own, so we'll do it in mutation listener. See
+          // the LinedCodePlugin for more. 
   
           return newLine;
         }
@@ -239,7 +240,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
     if (anchorOffset !== undefined || isEmpty) {
       const selectPoint =
         typeof anchorOffset === 'number' && focusOffset === undefined;
-      const selectOneLineRange =
+      const selectSingleLineRange =
         typeof anchorOffset === 'number' && typeof focusOffset === 'number';
 
       if (isEmpty) {
@@ -251,8 +252,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
         if ($isLinedCodeTextNode(child) && typeof childOffset === 'number') {
           return child.select(childOffset, childOffset);
         }
-      } else if (selectOneLineRange) {
-        // TODO: convert top / bottom to anchor / focus?
+      } else if (selectSingleLineRange) {
         const {child: aChild, childOffset: aChildOffset} =
           self.getChildFromLineOffset(anchorOffset);
         const {child: bChild, childOffset: bChildOffset} =
@@ -276,8 +276,9 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
               $isTextNode(bChild) ? 'text' : 'element',
             );
 
-            // we just set a range selection, so
-            // we'll get a range selection
+            // We just set a range selection, so
+            // we'll get a range selection back.
+
             return $getSelection() as RangeSelection;
           }
         }
@@ -346,17 +347,6 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
 
   // Helpers
 
-  getParentTag() {
-    const self = this.getLatest();
-    const codeNode = self.getParent();
-
-    if ($isLinedCodeNode(codeNode)) {
-      return codeNode.getTag();
-    }
-
-    return ''
-  }
-
   getDiscreteLineClasses() {
     return this.getLatest().__discreteLineClasses;
   }
@@ -384,7 +374,8 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
     const children = self.getChildren<LinedCodeTextNode>();
     let childOffset = lineOffset;
 
-    // empty lines should have no children
+    // Empty lines should have no children.
+
     const child = children.find((_node) => {
       const textContentSize = _node.getTextContentSize();
 

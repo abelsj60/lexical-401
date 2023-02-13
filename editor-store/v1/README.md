@@ -1,4 +1,4 @@
-# Editor Store
+# Editor store
 
 ## Overview
 

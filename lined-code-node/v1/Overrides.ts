@@ -19,7 +19,7 @@ export function swapLcnForFinalVersion(
 ) {
   // You may be wondering why not .replace the unconfigured CodeNode via the 'created'
   // mutation. Because the .replace() method doesn't work in this case, as the newly
-  // created node has no parent yet. Further, the CodeLineNodes have already been
+  // created node has no parent yet. Also, the LineCodeLineNodes have already been
   // created, so, we'd have to swim upstream to reset their initial options.
 
   // By contrast, the replacement API gives us a quick-n-easy way to

@@ -1,4 +1,4 @@
-# Lexical-4🔥1
+# Lexical 4🔥1
 
 Hey there! 
 
@@ -10,7 +10,7 @@ I was extending Lexical while working on my own project when I said to myself, "
 
 "Where, though?," I answered myself aloud. "There's nowhere to collect unofficial Lexical things right now." 
 
-And that's how Lexical-401 was born. I may be the only one to use it, but you're welcome to, too. If Meta does something official, I'd be happy to send what's here there. For now, this seems helpful — and, really, who doesn't love the *unauthorized*? Exactly. No one.
+And that's how Lexical 401 was born. I may be the only one to use it, but you're welcome to, too. If Meta does something official, I'd be happy to send what's here there. For now, this seems helpful — and, really, who doesn't love the *unauthorized*? Exactly. No one.
 
 -j (abelsj60@gmail.com)
 
@@ -48,6 +48,12 @@ Mostly, though, I imagine you'll use this code to whip up your own thing and go 
 </p>
 </details>
 
+<details><summary>What if Lexical does something official?</summary>
+<p>
+
+Happy to transfer or share...
+</details>
+
 <details><summary>What if this overwhelms you?</summary>
 <p>
 
@@ -61,9 +67,13 @@ But for now, what could possibly go wrong?
 *Just for fun, feel free to add yours...*
 
 ### Publishing systems
-- [Storycraft](https://storycraft.pro/) | Telling stories AI
 - [aietal](https://aietal-coming-soon-o6ip6v5f4-eimenhmdt.vercel.app/) | Academic writing with AI
-- Mine | I'll try to fill this space in someday...
+- [Storycraft](https://storycraft.pro/) | Telling stories with AI
+- Mine | I'll fill this space in someday...
+
+### Augmentations
+- [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with MDX project
+- [YiLang 2.0](https://github.com/Yidaotus/YiLang2) | Build your own language graph
 
 ### Content management systems
 - [Dossier](https://www.dossierhq.dev/) | Build your own headless CMS
