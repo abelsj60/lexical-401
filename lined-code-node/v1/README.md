@@ -204,7 +204,7 @@ At present, Markdown shortcuts can't be turned off inside the `LinedCodeNode`.
 
 I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898, but have not yet found an accord with core.
 
-I have left the `canContainMarkdown` method in the `LinedCodeNode`'s code for now. If you want, you can patch the PR's two updates into Lexical to use this method to correct the problem right now. 
+I have left the `canContainMarkdown` method in the `LinedCodeNode`'s code for now. If you want, you can patch the PR's two updates into Lexical to fix the problem with this method right now. 
 
 I'll update these docs when I know more.
 ## API highlights
