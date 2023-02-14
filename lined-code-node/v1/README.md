@@ -203,7 +203,7 @@ It's pretty easy to insert a `LinedCodeNode` into a Lexical editor:
 
 Note: `.insertInto` uses `setBlocksType_experimental`, which in turn uses `.replace`.  `.replace` doesn't seem to expect the `TextNodes` in an `ElementNode` to change on replacement. This generally causes Lexical to lose the `selection` when running `.replace` with the `LinedCodeNode`. 
 
-Don't worry, though! You dont need to do anything. `.insertInto` already updates the `selection` manually. But it's just worth knowing about the problem in case you want to customize the `LinedCodeNode` package for yourself. 
+Don't worry! You dont need to do anything. `.insertInto` already updates the `selection` manually. But it's worth knowing about the problem in case you want to customize the `LinedCodeNode` package for yourself. 
 
 ### Block transforms
 
