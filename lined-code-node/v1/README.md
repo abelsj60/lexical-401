@@ -77,7 +77,8 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
 
         // ALL DEFAULTS CAN BE OVERRIDEN:
         // $createLinedCodeNode(options)
-      ]
+      ],
+      ...
     }}
   >
     <LinedCodePlugin /> // <-- DON'T FORGET THIS!
