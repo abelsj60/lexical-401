@@ -256,7 +256,7 @@ I am actively working on the problem. I currently have a pull request open to ad
 
 I have left the `canBeTransformed` method — formerly `canBeMarkdown` — in the `LinedCodeNode` for now. If you want, you could follow the PR and patch its two updates into your Lexical installation in order to fix the problem right now: 
 
-- Add `canBeTransformed` to the `LexicalNode` class, per the [PR comment](https://github.com/facebook/lexical/pull/3898#issuecomment-1429641429).
+- Add `canBeTransformed` to the `LexicalNode` class, per this [PR comment](https://github.com/facebook/lexical/pull/3898#issuecomment-1429641429).
 - Check `canBeTransformed` in the `MarkdownShortcuts` file, as seen in the PR.
 
 I'll update these docs when I know more.
