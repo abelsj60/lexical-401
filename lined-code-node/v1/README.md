@@ -6,7 +6,7 @@ The `LinedCodeNode` is very flexible.
 
 With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemes, line-number visibility, and more, at the touch of a button. 
 
-https://user-images.githubusercontent.com/30417590/218881420-b1c70186-3eff-4d97-9c1e-a7e148e26482.mp4
+https://user-images.githubusercontent.com/30417590/218882487-cde82fd6-fb56-41f3-889d-ddea89cdaace.mp4
 
 ## Philosophy
 
