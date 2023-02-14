@@ -2,7 +2,7 @@
 
 ## Overview
 
-Make instances portable with the editor store so you can: 
+Make your `editor` instances portable with the editor store so you can: 
 
 - Enable drag-and-drop interfaces in your app
 - Dispatch commands or add data to an `editor` from anywhere  

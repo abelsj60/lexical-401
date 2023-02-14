@@ -4,7 +4,7 @@
 
 The `LinedCodeNode` is very flexible. 
 
-With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemas, line-number visibility, and more, with the touch of a button. 
+With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemes, line-number visibility, and more, at the touch of a button. 
 
 ## Philosophy
 
@@ -14,13 +14,13 @@ The `LinedCodeNode` controls most of what happens inside itself.
 
 This includes creating code lines, tokens, and highlight nodes. Want to load code into your node? Use `.append(...)` in one of two ways:
 
-##### Ex. 1: TextNode
+- Ex. 1: TextNode
 
   ```
   linedCodeNode.append([$createTextNode('const a = 2;')]);
   ```
 
-##### Ex. 2: LinedCodeLineNode
+- Ex. 2: LinedCodeLineNode
 
   ```
   const codeLine = $createLinedCodeLineNode();
@@ -48,13 +48,11 @@ Root (<div />)
     Linebreak (<br />)
 ```
 
-This doesn't lend itself to styling individual lines.
-
 ### Text handling
 
 No one really wants to add pictures or interactive elements to code blocks. 
 
-This lead to a central tenet of the `LinedCodeNode` — import, export, and update logic revolves around plain text, not nodes. This makes life easy, as Lexical doesn't like to merge code tokens as users type. 
+This lead to a central tenet of the `LinedCodeNode` — import, export, and update logic revolves around plain text, not nodes. This makes life easy, as Lexical really doesn't like to merge code tokens as users type. 
 
 ## Guides and patterns
 
@@ -67,9 +65,22 @@ This lead to a central tenet of the `LinedCodeNode` — import, export, and upda
 
       nodes: [
         ...,
-        ...getLinedCodeNodes({ // DEFAULT VALUES
+        ...getLinedCodeNodes({
           activateTabs: true,
-          theme: linedCodeNodeTheme || defaultLinedCodeNodeTheme,
+          theme: {
+            block: {
+              base: default.block?.base,
+              extension: default.block?.extension,
+            },
+            line: {
+              base: default.line?.base,
+              extension: default.line?.extension,
+            },
+            highlight: {
+              ...default.highlight,
+            },
+            numbers: default?.numbers
+          },
         })
       ]
 
@@ -117,23 +128,23 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 - `getSettingsForCloning`
 - `getSettingsForExportJson`
 
-##### Ex. 1: Options v. settings
+- Ex. 1: Options v. settings
 
-```
-On creation, the `initialLanguage` options is converted into the `language` setting.
+  ```
+  On creation, the `initialLanguage` options is converted into the `language` setting.
 
-This is a problem for reconciliation, as we need to pass the current
-node’s state forward. To do this, I pass `language` forward as the 
-`initialLanguage` option via `getSettingsForExportJson`.
-```
+  This is a problem for reconciliation, as we need to pass the current
+  node’s state forward. To do this, I pass `language` forward as the 
+  `initialLanguage` option via `getSettingsForExportJson`.
+  ```
 
-##### Ex. 2: Unserializable properties
-```
-Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. Unfortunately, Lexical bans unserializeble properties!
+- Ex. 2: Unserializable properties
+  ```
+  Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. Unfortunately, Lexical bans unserializeble properties!
 
-No problem. On export, `getSettingsForExportJSON` fixes the problem 
-by replacing the `tokenizer` with `null`. No fuss, no muss.
-```
+  No problem. On export, `getSettingsForExportJSON` fixes the problem 
+  by replacing the `tokenizer` with `null`. No fuss, no muss.
+  ```
 
 ### Editor insertion
 
@@ -164,7 +175,7 @@ Don't worry. You dont need to do anything. `.insertInto` already updates the `se
 
 ### Block transforms
 
-It's also fairly easy to convert a `LinedCodeNode` to something else:
+It's also easy to convert a `LinedCodeNode` to something else:
 
 ```
 const formatParagraph = () => {
@@ -197,7 +208,7 @@ At present, Markdown shortcuts can't be turned off inside the `LinedCodeNode`.
 
 I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898, but have not yet found an accord with core.
 
-I have left the `canContainMarkdown` method in the `LinedCodeNode`'s code for now. If you want, you can patch the PR's two updates into Lexical to fix the problem with this method right now. 
+I have left the `canContainMarkdown` method in the `LinedCodeNode`'s code for now. If you want, you can patch the PR's two updates into your Lexical installation in order to fix the problem right now. 
 
 I'll update these docs when I know more.
 ## API highlights
@@ -208,13 +219,13 @@ I'll update these docs when I know more.
 
 - fallback: `false`
 
-Lexical turns tabs off by default, instead preferring to dedicate the tab button to navigation. This is a problem for long-form writing — and code. As a result, I’ve added an option to activate tabs within `LinedCodeNodes`. When active, tabs will work as expected when the current selection is inside a `LinedCodeNode`. They will not work outside of it unless you turn them on yourself.
+Lexical turns tabs off by default, instead preferring to dedicate the tab button to navigation. I’ve added an option to activate tabs within `LinedCodeNodes`. When active, tabs will work as normal whenever the `selection` is inside a `LinedCodeNode`. 
 
 #### `defaultLanguage` 
 
 - fallback: `javascript`
 
-You’ll pretty much always want a `LinedCodeNode` to start with an initial language. You may also want to allow the block’s language to be reset via a button. The `defaultLanguage` setting makes both easy. It takes over when you don’t pass an `initialLanguage`. 
+You’ll pretty much always want a `LinedCodeNode` to start with an initial language. You may also want to allow the block’s language to be reset by button. The `defaultLanguage` setting makes both easy. It takes over when you don’t pass an `initialLanguage`. 
 
 #### `isLockedBlock` 
 
@@ -232,41 +243,45 @@ This option disables all three behaviors.
 
 - fallback: `javascript`
 
-Use this option to set the `LinedCodeNode’s` first language. It os also set by `defaultLanguage`.
+Use this option to set the `LinedCodeNode’s` first language. It's also set by `defaultLanguage`.
 
 #### `lineNumbers` 
 
 - fallback: `true`
 
-Sometimes you want line numbers, sometimes you don’t. Sometimes you want to turn them on and off. This option can help. 
+Sometimes you want line numbers, sometimes you don’t. 
+
+Sometimes you want to turn them on and off. This option can help. 
 
 Individual lines always track their own line number via a node property and data attribute, however, their visibility depends on your CSS. You can pass your own classname via the `LinedCodeNode`'s `theme` or use the fallback, "code-line-number."
 
-*Ex. Line number styling via pseudoclass*
+- Ex. Line number styling via pseudoclass
 
-```
-.code-line-number.PlaygroundEditorTheme__code:before { // CODE ELEMENT
-  background-color: #eee;
-  border-right: 1px solid #ccc;
-  content: '';
-  height: 100%;
-  left: 0;
-  min-width: 41px;
-  position: absolute;
-  top: 0;
-}
+  ```
+  .code-line-number.PlaygroundEditorTheme__code:before { // CODE ELEMENT
+    background-color: #eee;
+    border-right: 1px solid #ccc;
+    content: '';
+    height: 100%;
+    left: 0;
+    min-width: 41px;
+    position: absolute;
+    top: 0;
+  }
 
-.code-line-number:before { // CHILD DIVS (LINES)
-  color: #777;
-  content: attr(data-line-number);
-  left: 0px;
-  min-width: 33px;
-  position: absolute;
-  text-align: right;
-}
-```
+  .code-line-number:before { // CHILD DIVS (LINES)
+    color: #777;
+    content: attr(data-line-number);
+    left: 0px;
+    min-width: 33px;
+    position: absolute;
+    text-align: right;
+  }
+  ```
 
-You can toggle line-number visibility by using the `toggleLineNumbers` method on the `LinedCodeNode`. When off, the line number class will be removed from the `code` element and its child `divs`.
+You can toggle line number visibility with the `LinedCodeNode`'s `toggleLineNumbers` method. 
+
+When off, the line-number class will be removed from the `code` element and its child `divs`.
 
 ##### Capabilities and limitations
 
@@ -274,7 +289,7 @@ This isn’t 100% perfect.
 
 Here’s what you can do: Style line numbers and the gutter that sits behind them (see above CSS). You can also enable horizontal scrolling on long lines by adding `overflow-x: auto` to the `code` element and `white-space: pre` to each line. 
 
-Here's what you can't do: Position sticky and "Prettier" line breaks. 
+Here's what you can't do: `{ position sticky }`. (Maybe more.) 
 
 #### `theme` 
 
@@ -284,10 +299,17 @@ The `LinedCodeNode` accepts a theme object on creation.
 
 ```
 export interface LinedCodeNodeTheme {
-    block?: EditorThemeClassName;
-    line?: EditorThemeClassName;
-    numbers?: EditorThemeClassName;
-    highlight?: Record<string, EditorThemeClassName>;
+  block?: {
+    base?: EditorThemeClassName;
+    extension?: EditorThemeClassName;
+  };
+  line?: {
+    base?: EditorThemeClassName;
+    extension?: EditorThemeClassName;
+  };
+  numbers?: EditorThemeClassName;
+  highlight?: Record<string, EditorThemeClassName>;
+  [key: string]: any; // makes TS very happy
 }
 ```
 While these values aren't designed to be changed, you can still modify your node's styling at any time by updating its `themeName` property (see example below) or by updating each line's `discreteLineClasses`. 
@@ -298,25 +320,26 @@ While these values aren't designed to be changed, you can still modify your node
 
 Change your `LinedCodeNode`'s styling on the fly.
 
-##### *Ex. 1: CSS with no `themeName` applied*
-```
-.code-line-number.PlaygroundEditorTheme__code {
-    padding-left: 52px;
-}
-```
-##### *Ex. 2: CSS with `themeName` ("tron") applied*
-```
-.tron.code-line-number.PlaygroundEditorTheme__code {
-    padding-left: 8px;
-}
-```
+- *Ex. 1: CSS with no `themeName` applied*
+  ```
+  .code-line-number.PlaygroundEditorTheme__code {
+      padding-left: 52px;
+  }
+  ```
+- *Ex. 2: CSS with `themeName` ("tron") applied*
+  ```
+  .tron.code-line-number.PlaygroundEditorTheme__code {
+      padding-left: 8px;
+  }
+  ```
+
 #### `tokenizer` 
 
 - fallback: `Prism`
 
 You should be able to use your own tokenizers with the `LinedCodeNode`. Simply pass a function that matches the `Tokenizer` interface when using `$createLinedCodeNode` or as a default option. 
 
-But note, I haven’t tested the function that normalizes the `tokenizer’s` tokens with any library other than Prism. Shout if it breaks and/or send me your function and maybe I can fix it.
+Do note, though, I've only tested the Prism `tokenizer` against the method that creates normalized tokens. If you try another one and it breaks, should and/or send it to me. Maybe I can fix it.
 
 ```
 The `LinedCodeNode` tokenizes text via a multi-step process: 
@@ -331,7 +354,7 @@ tokens to the current code-text without creating new text nodes.
 
 ### Methods
 
-- Please skim the code for more about individual custom methods.
+_Please skim the code for more about individual custom methods._
 
 ### Commands
 
@@ -365,17 +388,48 @@ The exception is drawing people's attention to certain lines — say by adding 
 
 ### Methods
 
-- Please skim the code for more about individual custom methods.
+_Please skim the code for more about individual custom methods._
+
+- Ex. On-the-fly line classes:
+
+  ```
+  Lexical core plugin:
+
+  <NodeEventPlugin
+    nodeType={LinedCodeLineNode}
+    eventType="click"
+    eventListener={handleLineClick}
+  />
+  ```
+  ```
+  Handler: 
+
+  const handleLineClick = (
+    _event: Event, 
+    editor: LexicalEditor, 
+    key: NodeKey
+  ) => {
+    const line = $getNodeByKey(key) as LinedCodeLineNode;
+    ...
+    if (isActive) {
+      line.addDiscreteLineClasses(ACTIVE_LINE_CLASS);
+    } else {
+      line.removeDiscreteLineClasses(ACTIVE_LINE_CLASS);
+    }
+  }
+  ```
 
 ### Commands
 
 #### `ADD_DISCRETE_LINE_CLASSES_COMMAND`
 
-Use this command to add classes to your individual lines of code. For instance, you might want to add an “active” class that highlights the line in a special color.
+Use this command to add classes to your individual lines of code. For instance, you might want to add an “active” class that highlights the line in a special color. You can also do this via its sibling method.
 
 #### `REMOVE_DISCRETE_LINE_CLASSES_COMMAND`
 
 Use this command to remove classes from your individual lines of code. For instance, you might want to remove an “active” class that highlights the line in a special color.
+
+(See above example.)
 
 # LinedCodeTextNode
 

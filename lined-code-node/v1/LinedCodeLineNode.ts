@@ -73,9 +73,16 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
 
       if (codeNodeTheme) {
         const {line: lineClasses, numbers: numberClass} = codeNodeTheme || {};
-        
-        if (lineClasses) {
-          codeLineClasses.push(lineClasses);
+        const { base: lineBase, extension: lineExtension } = lineClasses || {};
+
+        if (lineBase || lineExtension) {
+          if (lineBase) {
+            codeLineClasses.push(lineBase);
+          }
+  
+          if (lineExtension) {
+            codeLineClasses.push(lineExtension);
+          }
         }
         
         if (lineNumbers && numberClass) {

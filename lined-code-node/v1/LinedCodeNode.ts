@@ -50,7 +50,6 @@ import {
   getLinedCodeNodesFromSelection,
   getNormalizedTokens,
   getParamsToSetSelection,
-  // normalizeOffsets,
   normalizePoints,
   removeClassNamesFromElement,
   getLineCarefully,
@@ -71,11 +70,17 @@ export interface LinedCodeNodeOptions {
 }
 
 export interface LinedCodeNodeTheme {
-  block?: EditorThemeClassName;
-  line?: EditorThemeClassName;
+  block?: {
+    base?: EditorThemeClassName;
+    extension?: EditorThemeClassName;
+  };
+  line?: {
+    base?: EditorThemeClassName;
+    extension?: EditorThemeClassName;
+  };
   numbers?: EditorThemeClassName;
   highlight?: Record<string, EditorThemeClassName>;
-  [key: string]: any;
+  [key: string]: any; // makes TS very happy
 }
 
 export interface LinedCodeNodeOptions_Serializable extends LinedCodeNodeOptions {
@@ -175,11 +180,18 @@ export class LinedCodeNode extends TypelessCodeNode {
     const {language, lineNumbers, theme: codeNodeTheme, themeName} = self.getSettings();
 
     if (codeNodeTheme) {
-      const { block: blockClass, numbers: numberClass } = codeNodeTheme;
+      const { block: blockClasses, numbers: numberClass } = codeNodeTheme;
+      const { base: blockBase, extension: blockExtension } = blockClasses || {};
       const codeNodeClasses = [];
 
-      if (blockClass) {
-        codeNodeClasses.push(blockClass);
+      if (blockBase || blockExtension) {
+        if (blockBase) {
+          codeNodeClasses.push(blockBase);
+        }
+
+        if (blockExtension) {
+          codeNodeClasses.push(blockExtension);
+        }
       }
 
       if (lineNumbers && numberClass) {
@@ -427,6 +439,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   }
 
   convertToPlainText(updateSelection?: boolean): boolean {
+    // Could ditch updateSelection toggle...?
     const writableRoot = $getRoot().getWritable();
 
     if ($isRootNode(writableRoot)) {
@@ -539,10 +552,10 @@ export class LinedCodeNode extends TypelessCodeNode {
     const writableCodeNode = this.getWritable();
 
     if (!writableCodeNode.getSettings().isBlockLocked) {
-      return writableCodeNode.convertToPlainText();
+      writableCodeNode.convertToPlainText(true);
     }
-
-    return false;
+    
+    return true;
   }
 
   insertClipboardData_INTERNAL(
@@ -858,13 +871,6 @@ export class LinedCodeNode extends TypelessCodeNode {
     });
   }
 
-  getTextContent(): string {
-    const self = this.getLatest();
-    const children = self.getChildren();
-
-    return self.getRawText(children);
-  }
-
   getLanguage() {
     // Note: highly specific method included for parity with 
     // official CodeNode
@@ -921,6 +927,9 @@ export class LinedCodeNode extends TypelessCodeNode {
     const rawText =
       [...nodes].reduce((linesText, node, idx, arr) => {
         let text = '';
+
+        // Lexical nodes get text from getTextContent
+        // DOM nodes use textContent, matching Lexical
 
         if ('getTextContent' in node) {
           text = node.getTextContent();

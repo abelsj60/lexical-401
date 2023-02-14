@@ -52,21 +52,33 @@ export function swapLcnForFinalVersion(
           defaultsOptions.lineNumbers ?? true,
         ),
         theme: {
-          block: addOptionOrDefault(
-            settings?.theme?.block, 
-            defaultsOptions?.theme?.block || ''
-          ),
-          line: addOptionOrDefault(
-            settings?.theme?.line, 
-            defaultsOptions.theme?.line || ''
-          ),
+          block: {
+            base: addOptionOrDefault(
+              settings?.theme?.block?.base, 
+              defaultsOptions?.theme?.block?.base || ''
+            ),
+            extension: addOptionOrDefault(
+              settings?.theme?.block?.extension, 
+              defaultsOptions?.theme?.block?.extension || ''
+            )
+          },
+          line: {
+            base: addOptionOrDefault(
+              settings?.theme?.line?.base, 
+              defaultsOptions?.theme?.line?.base || ''
+            ),
+            extension: addOptionOrDefault(
+              settings?.theme?.line?.extension, 
+              defaultsOptions?.theme?.line?.extension || ''
+            ),
+          },
           highlight: addOptionOrDefault(
             settings.theme?.highlight, 
             defaultsOptions?.theme?.highlight || {}
           ),
           numbers: addOptionOrDefault(
             settings?.theme?.numbers, 
-            defaultsOptions.theme?.numbers || 'code-line-number'
+            defaultsOptions.theme?.numbers || 'line-number'
           )
         },
         themeName: addOptionOrDefault(
