@@ -2,7 +2,7 @@
 
 I know, the Playground has a nifty code-action menu. 
 
-Last I checked, I only needed to make a minor update to this function [(look here)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx): 
+Last I checked, I only needed to make a minor update to the following function [(original file)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx): 
 
 ```
 export function PrettierButton({lang, editor, getCodeDOMNode}: Props) {
@@ -38,7 +38,7 @@ export function PrettierButton({lang, editor, getCodeDOMNode}: Props) {
         if (parsed !== '') {
           const parsedTextByLine = parsed.split(/\n/);
 
-          // 👇 UPDATE THIS STATEMENT! 🤞 THAT SHOULD BE IT...
+          // HERE! 👇 UPDATE THIS STATEMENT! 🤞 THAT SHOULD BE IT...
 
           codeNode.getChildren<LinedCodeLineNode>().forEach((line, index) => {
             if (line.getTextContent() !== parsedTextByLine[index]) {
