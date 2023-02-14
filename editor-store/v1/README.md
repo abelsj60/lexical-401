@@ -2,16 +2,11 @@
 
 ## Overview
 
-The `editor` store makes Lexical editors portable. 
+Make instances portable with the editor store so you can: 
 
-The core Lexical library treats each `editor` as a stationary object. 
-There are many good reasons to change this behavior: 
-
-- Enable drag-and-drop interfaces that move `editors` around your app
-- Dispatch a command or add data to an `editor` from a cousin component  
-- Pluck data from an instance on the fly when submitting form and other data
-
-The `EditorStore` will make your `editors` — and their `historyState` — portable.
+- Enable drag-and-drop interfaces in your app
+- Dispatch commands or add data to an `editor` from anywhere  
+- Pluck data from an instance on the fly in order to submit form and other data
 
 ## Philosophy
 

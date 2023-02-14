@@ -2,31 +2,9 @@
 
 ## Overview
 
-The `LinedCodeNode` is a code block that wraps tokens into lines via a div: 
+The `LinedCodeNode` is very flexible. 
 
-```
-Root (<div />)
-  Code element (<code />)
-    Line of code (<div />)
-      Text/code (<span />)
-```
-This is in contrast to Lexical’s official code package, which mixes tokens with line breaks in a long, flat list. The result looks like lines, but it's an aesthetic effect, not a structural one:
-```
-Root (<div />)
-  Code element (<code />)
-    Text/code (<span />)
-    Linebreak (<br />)
-```
-
-Some functionality is hard to achieve with the official `CodeNode`:
-
-- It can be hard to conceptualize what line a user is on at any given time.
-
-- There’s no way to style or highlight lines in order to better focus user attention.
-
-- Long lines “wrap” onto multiple un-numbered lines at the bottom of the code node. 
-
-The `LinedCodeNode` is not perfect, but it addresses these problems. 
+With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemas, line-number visibility, and more, with the touch of a button. 
 
 ## Philosophy
 
@@ -52,14 +30,31 @@ This includes creating code lines, tokens, and highlight nodes. Want to load cod
   linedCodeNode.append([codeLine]);
   ```
 
-Note: Need to call user attention to one or more lines in particular? No problem. 
-You can add discrete line classes — such as "active" to one or more of your lines via the `ADD_DISCRETE_LINE_CLASSES_COMMAND` and `REMOVE_DISCRETE_LINE_CLASSES_COMMAND` commands or their sibling methods. 
+### Internal structure
+
+The internal structure of the `LinedCodeNode` looks like this: 
+
+```
+Root (<div />)
+  Code element (<code />)
+    Line of code (<div />)
+      Text/code (<span />)
+```
+By contrast, Lexical’s official CodeNode creates a long, flat list of line breaks and code tokens.
+```
+Root (<div />)
+  Code element (<code />)
+    Text/code (<span />)
+    Linebreak (<br />)
+```
+
+This doesn't lend itself to styling individual lines.
 
 ### Text handling
 
 No one really wants to add pictures or interactive elements to code blocks. 
 
-This lead me to one of the `LinedCodeNode's` central tenets — most of its import, export, and update logic revolves around plain text, not nodes. This makes life much easier, as Lexical goes nuts when merging code tokens while users type. Debugging that seems like a nightmare.
+This lead to a central tenet of the `LinedCodeNode` — import, export, and update logic revolves around plain text, not nodes. This makes life easy, as Lexical doesn't like to merge code tokens as users type. 
 
 ## Guides and patterns
 
@@ -128,7 +123,7 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 On creation, the `initialLanguage` options is converted into the `language` setting.
 
 This is a problem for reconciliation, as we need to pass the current
-node’s state forward. To do this, I pass `language` forward as an 
+node’s state forward. To do this, I pass `language` forward as the 
 `initialLanguage` option via `getSettingsForExportJson`.
 ```
 
@@ -136,10 +131,8 @@ node’s state forward. To do this, I pass `language` forward as an
 ```
 Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. Unfortunately, Lexical bans unserializeble properties!
 
-It's not a problem...!
-
-On export, `getSettingsForExportJSON` fixes the problem by replacing 
-the `tokenizer` with `null`. No fuss, no muss...
+No problem. On export, `getSettingsForExportJSON` fixes the problem 
+by replacing the `tokenizer` with `null`. No fuss, no muss.
 ```
 
 ### Editor insertion

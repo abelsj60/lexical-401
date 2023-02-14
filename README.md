@@ -48,12 +48,6 @@ Mostly, though, I imagine you'll use this code to whip up your own thing and go 
 </p>
 </details>
 
-<details><summary>What if Lexical does something official?</summary>
-<p>
-
-Happy to transfer or share...
-</details>
-
 <details><summary>What if this overwhelms you?</summary>
 <p>
 
@@ -69,7 +63,6 @@ But for now, what could possibly go wrong?
 ### Publishing systems
 - [aietal](https://aietal-coming-soon-o6ip6v5f4-eimenhmdt.vercel.app/) | Academic writing with AI
 - [Storycraft](https://storycraft.pro/) | Telling stories with AI
-- Mine | I'll fill this space in someday...
 
 ### Augmentations
 - [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with MDX project
