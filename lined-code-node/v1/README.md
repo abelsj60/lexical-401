@@ -22,7 +22,7 @@ Root (<div />)
     Line of code (<div />)
       Text/code (<span />)
 ```
-This is unusual. The official `CodeNode` is assembled by transforms, as it has a different internal structure:
+This is unusual. The official `CodeNode` is highlighted by transforms and has a different internal structure:
 
 ```
 Root (<div />)
