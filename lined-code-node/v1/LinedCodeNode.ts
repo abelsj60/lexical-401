@@ -731,11 +731,13 @@ export class LinedCodeNode extends TypelessCodeNode {
     // cmd: SET_LANGUAGE_COMMAND
     const self = this.getLatest();
     const writableCodeNode = this.getWritable();
+    const currentLanguage = self.getLanguage();
     const nextLanguage = getCodeLanguage(language);
+    const isNewLanguage = nextLanguage !== currentLanguage;
 
-    if (nextLanguage) {
+    if (isNewLanguage) {
       writableCodeNode.__language = nextLanguage;
-      self.updateEveryLine(); // keep kids current
+      self.updateEveryLine(); // apply change
 
       return true;
     }
@@ -770,21 +772,14 @@ export class LinedCodeNode extends TypelessCodeNode {
     return writableCodeNode.__activateTabs;
   }
 
-  updateEveryLine(): boolean {
+  updateEveryLine() {
     const writableCodeNode = this.getWritable();
-    let isUpdated = false;
 
-    writableCodeNode.getChildren().forEach((line) => {
+    writableCodeNode.getChildren<LinedCodeLineNode>().forEach((line) => {
       if ($isLinedCodeLineNode(line)) {
         writableCodeNode.updateLineCode(line);
-
-        if (!isUpdated) {
-          isUpdated = true;
-        }
       }
     });
-
-    return isUpdated;
   }
 
   // Helpers

@@ -253,7 +253,10 @@ At present, Markdown shortcuts can't be turned off inside the `LinedCodeNode`.
 
 I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898, but have not yet found an accord with core.
 
-I have left the `canBeTransformed` method in the `LinedCodeNode`'s code for now (updated from `canBeMarkdown`, per the PR comment). If you want, you can patch the PR's two updates into your Lexical installation in order to fix the problem right now. (Just adjust the name.)
+I have left the `canBeTransformed` method — formerly `canBeMarkdown` — in the `LinedCodeNode` for now. If you want, you could follow the PR and patch its two updates into your Lexical installation in order to fix the problem right now: 
+
+- Add `canBeTransformed` to the `LexicalNode` class, per the [PR comment](https://github.com/facebook/lexical/pull/3898#issuecomment-1429641429).
+- Check `canBeTransformed` in the `MarkdownShortcuts` file, as seen in the PR.
 
 I'll update these docs when I know more.
 ## API highlights
