@@ -57,7 +57,7 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
       nodes: [
         ...,
         ...getLinedCodeNodes({
-          // DEFAULT OPTIONS:
+          // SOME DEFAULT OPTIONS
           activateTabs: true,
           theme: {
             block: {
@@ -75,8 +75,8 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
           },
         })
 
-        // REMEMBER: DEFAULTS CAN BE OVERRIDEN
-        // WHEN CREATING A LINED CODE NODE.
+        // ALL DEFAULTS CAN BE OVERRIDEN:
+        // $createLinedCodeNode(options)
       ]
     }}
   >
