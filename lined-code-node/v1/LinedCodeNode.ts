@@ -79,7 +79,7 @@ export interface LinedCodeNodeTheme {
     extension?: EditorThemeClassName;
   };
   numbers?: EditorThemeClassName;
-  highlight?: Record<string, EditorThemeClassName>;
+  highlights?: Record<string, EditorThemeClassName>;
   [key: string]: any; // makes TS very happy
 }
 

@@ -72,9 +72,9 @@ export function swapLcnForFinalVersion(
               defaultsOptions?.theme?.line?.extension || ''
             ),
           },
-          highlight: addOptionOrDefault(
-            settings.theme?.highlight, 
-            defaultsOptions?.theme?.highlight || {}
+          highlights: addOptionOrDefault(
+            settings.theme?.highlights, 
+            defaultsOptions?.theme?.highlights || {}
           ),
           numbers: addOptionOrDefault(
             settings?.theme?.numbers, 

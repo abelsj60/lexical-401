@@ -12,7 +12,7 @@ With it, you can create dedicated Lexical code editors, call attention to specif
 
 The `LinedCodeNode` controls most of what happens inside itself. 
 
-This includes creating lines, tokens, and highlight nodes. This means it creates its own internal nodes:
+This includes creating `code-line` and `code-text` nodes. This means it creates its own internal nodes:
 
 ```
 Root (<div />)
@@ -50,9 +50,14 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
 - Spread `getLinedCodeNodes()` into your `LexicalComposer’s` nodes array.
 - Add default options to `getLinedCodeNodes()` as a param. Internal fallbacks exist.
 
+  ```
+  <LexicalComposer
+    initialConfig={{
+      ...
       nodes: [
         ...,
         ...getLinedCodeNodes({
+          // DEFAULT OPTIONS:
           activateTabs: true,
           theme: {
             block: {
@@ -63,13 +68,28 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
               base: default.line?.base,
               extension: default.line?.extension,
             },
-            highlight: {
-              ...default.highlight,
+            highlights: {
+              ...default.highlights,
             },
             numbers: default?.numbers
           },
         })
+
+        // REMEMBER: DEFAULTS CAN BE OVERRIDEN
+        // WHEN CREATING A LINED CODE NODE.
       ]
+    }}
+  >
+    <LinedCodePlugin /> // <-- DON'T FORGET THIS!
+    ...
+  </LexicalComposer>
+  ```
+
+#### What about Lexical's official code package?
+
+I built the `LinedCodeNode` to override Lexical's official code package. It's as close to a drop-in replacement as I could reasonably get. I've taken the liberty of mounting the official nodes for you via `getLinedCodeNodes`. 
+
+Do not include them yourself! And do not use the official code plugin, either!
 
 ### Options v. settings
 
@@ -332,7 +352,7 @@ export interface LinedCodeNodeTheme {
     extension?: EditorThemeClassName;
   };
   numbers?: EditorThemeClassName;
-  highlight?: Record<string, EditorThemeClassName>;
+  highlights?: Record<string, EditorThemeClassName>;
   [key: string]: any; // makes TS very happy
 }
 ```

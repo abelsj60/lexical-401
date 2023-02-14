@@ -61,7 +61,7 @@ export class LinedCodeTextNode extends TextNode {
   
       if ($isLinedCodeNode(codeNode)) {
         const {theme: codeNodeTheme} = codeNode.getSettings();
-        const { highlight: highlightClasses } = codeNodeTheme || {};
+        const { highlights: highlightClasses } = codeNodeTheme || {};
         
         if (highlightClasses !== undefined) {
           highlightClass = getHighlightThemeClass(
@@ -95,7 +95,7 @@ export class LinedCodeTextNode extends TextNode {
   
       if ($isLinedCodeNode(codeNode)) {
         const {theme: codeNodeTheme} = codeNode.getSettings();
-        const { highlight: highlightClasses } = codeNodeTheme || {};
+        const { highlights: highlightClasses } = codeNodeTheme || {};
   
         if (highlightClasses) {
           const prevHighlightClass = getHighlightThemeClass(
@@ -189,7 +189,7 @@ export class LinedCodeTextNode extends TextNode {
     return true;
   }
 
-  canContainMarkdown(): boolean {
+  canBeTransformed(): boolean {
     return false;
   }
 }
