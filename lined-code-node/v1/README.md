@@ -30,7 +30,7 @@ Root (<div />)
     Text/code (<span />)
     Linebreak (<br />)
 ```
-The `LinedCodeNode`'s structure is maintained in two ways: 
+The `LinedCodeNode`'s nested internal structure is maintained in two ways: 
 
 - By letting it create its own nodes when necessary. 
 - By having the Override API swap code-lines for paragraphs and code-text for text whenever the `selection` is inside a <code /\> element. 
