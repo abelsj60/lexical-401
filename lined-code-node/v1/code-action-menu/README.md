@@ -2,7 +2,7 @@
 
 I know, the Playground has a nifty code-action menu. 
 
-Last I checked, I only needed to make a minor update to the following function [(original file)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx): 
+Last I checked, it'll work with the following minor update to this function [(original file)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx): 
 
 ```
 export function PrettierButton({lang, editor, getCodeDOMNode}: Props) {
