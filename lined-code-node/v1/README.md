@@ -252,7 +252,7 @@ Now, call `$setBlocksType_experimental` to convert your new paragraphs into any 
 
 At present, Markdown shortcuts can't be turned off inside the `LinedCodeNode`.
 
-I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898, but have not yet found an accord with core.
+I am actively working on the problem. I currently have a pull request open to address the issue: https://github.com/facebook/lexical/pull/3898.
 
 I have left the `canBeTransformed` method — formerly `canBeMarkdown` — in the `LinedCodeNode` for now. If you want, you could follow the PR and patch its two updates into your Lexical installation in order to fix the problem right now: 
 
