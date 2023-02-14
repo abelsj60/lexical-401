@@ -58,8 +58,10 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
       ...
       nodes: [
         ...,
+        // SPREAD THIS FUNCTION INTO NODES ARRAY
         ...getLinedCodeNodes({
-          // SOME DEFAULT OPTIONS
+          // ADD DEFAULT OPTIONS (OR DON'T)
+          // (YOU CAN OVERRIDE THEM LATER)
           activateTabs: true,
           theme: {
             block: {
@@ -76,9 +78,6 @@ The `LinedCodeNode` depends on this: import, export, and update logic works with
             numbers: default?.numbers
           },
         })
-
-        // ALL DEFAULTS CAN BE OVERRIDEN:
-        // $createLinedCodeNode(options)
       ],
       ...
     }}
