@@ -8,31 +8,11 @@ With it, you can create dedicated Lexical code editors, call attention to specif
 
 ## Philosophy
 
-### Internal control
+### Control and structure
 
 The `LinedCodeNode` controls most of what happens inside itself. 
 
-This includes creating code lines, tokens, and highlight nodes. Want to load code into your node? Use `.append(...)` in one of two ways:
-
-- Ex. 1: TextNode
-
-  ```
-  linedCodeNode.append([$createTextNode('const a = 2;')]);
-  ```
-
-- Ex. 2: LinedCodeLineNode
-
-  ```
-  const codeLine = $createLinedCodeLineNode();
-
-  codeLine.append([$createTextNode('const a = 2;')]);
-
-  linedCodeNode.append([codeLine]);
-  ```
-
-### Internal structure
-
-The internal structure of the `LinedCodeNode` looks like this: 
+This includes creating lines, tokens, and highlight nodes. This means it creates its own internal nodes:
 
 ```
 Root (<div />)
@@ -40,19 +20,26 @@ Root (<div />)
     Line of code (<div />)
       Text/code (<span />)
 ```
-By contrast, Lexical’s official CodeNode creates a long, flat list of line breaks and code tokens.
+This is unusual. The official `CodeNode` is assembled by transforms, as it has a different internal structure:
+
 ```
 Root (<div />)
   Code element (<code />)
     Text/code (<span />)
     Linebreak (<br />)
 ```
+The `LinedCodeNode`'s structure is maintained in two ways: 
 
-### Text handling
+- By letting it create its own nodes when necessary. 
+- By having the Override API swap code-lines for paragraphs and code-text for text whenever the `selection` is inside a <code /\> element. 
 
-No one really wants to add pictures or interactive elements to code blocks. 
+_See "Inserting code" for how to insert code in the node._
 
-This lead to a central tenet of the `LinedCodeNode` — import, export, and update logic revolves around plain text, not nodes. This makes life easy, as Lexical really doesn't like to merge code tokens as users type. 
+### Running on text
+
+People don't tend to put pictures or headlines in code blocks. 
+
+The `LinedCodeNode` depends on this: import, export, and update logic works with plain text, not nodes. This makes life easier than it might be otherwise. One reason: Lexical's text-merge algorithm doesn't like multiple text tokens per line. 
 
 ## Guides and patterns
 
@@ -90,11 +77,11 @@ This lead to a central tenet of the `LinedCodeNode` — import, export, and upda
 
 You don't need to fill in every property. Lexical's Override API will merge your choices at call site with the default options that were passed when registering nodes on the `LexicalComposer`. Sensible fallbacks exist if neither is provided.
 
-Please see "import/export" for how this affects serialization.
+_See "import/export" for how this affects serialization._
 
 ### Paragraph and text replacement
 
-On its own, Lexical has trouble working with bespoke text layouts. 
+On its own, Lexical can have trouble working with bespoke text layouts. 
 
 Fortunately, the Override API can help. 
 
@@ -103,6 +90,31 @@ The `LinedCodeNode` uses it to swap the `ParagraphNode` for the `LinedCodeLineNo
 Unfortunately, TypeScript can still niggle. 
 
 It doesn't like replacing `{ type: ‘paragraph’ }` with `{ type: ‘code-line’ }`, so I’ve placated it with [type surgery](https://stackoverflow.com/a/57211915). I've removed `.type` from the `ParagraphNode` in order to make a `TypelessParagraphNode` from which to extend the `LinedCodeLineNode`.
+
+### Inserting code
+
+There are two ways to insert code into a `LinedCodeNode`:
+
+- Ex. 1: `TextNode`
+
+  ```
+  const codeNode = $createLinedCodeNode();
+
+  codeNode.append($createTextNode('const a = 2;'));
+  root.append(codeNode); 
+  ```
+
+- Ex. 2: `LinedCodeLineNode`
+
+  ```
+  const codeNode = $createLinedCodeNode();
+  const codeLine = $createLinedCodeLineNode();
+
+  codeLine.append($createTextNode('const a = 2;'));
+  codeNode.append(codeLine);
+  ```
+
+Note: Remember to spread arrays. _(See "[Importers](https://github.com/abelsj60/lexical-401/blob/main/lined-code-node/v1/Importers.ts)" for examples.)_
 
 ### Import/export
 
@@ -150,50 +162,62 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 
 It's pretty easy to insert a `LinedCodeNode` into a Lexical editor:
 
-```
-const formatCode = (customOptions: LinedCodeNodeOptions) => {
-  if (blockType !== "code") {
-    editor.update(() => {
-      const selection = $getSelection();
-      const codeNode = $createLinedCodeNode(customOptions);
+- Ex. Easy-peasy node insertion
 
-      if ($isRangeSelection(selection)) {
-        codeNode.insertInto(selection);
-      }
-    });
-  }
+  ```
+  const formatCode = (customOptions: LinedCodeNodeOptions) => {
+    if (blockType !== "code") {
+      editor.update(() => {
+        const selection = $getSelection();
+        const codeNode = $createLinedCodeNode(customOptions);
 
-  setBlockType('code');
-};
-```
+        if ($isRangeSelection(selection)) {
+          codeNode.insertInto(selection);
+        }
+      });
+    }
 
-(This modified function comes straight from the Playground.)
+    setBlockType('code');
+  };
+  ```
 
 Note: `.insertInto` uses `setBlocksType_experimental`, which in turn uses `.replace`.  `.replace` doesn't seem to expect the `TextNodes` in an `ElementNode` to change on replacement. This generally causes Lexical to lose the `selection` when running `.replace` with the `LinedCodeNode`. 
 
-Don't worry. You dont need to do anything. `.insertInto` already updates the `selection` manually. Still, it's worth knowing about the problem should you want to customize these nodes for yourself. 
+Don't worry, though! You dont need to do anything. `.insertInto` already updates the `selection` manually. But it's just worth knowing about the problem in case you want to customize the `LinedCodeNode` package for yourself. 
 
 ### Block transforms
 
 It's also easy to convert a `LinedCodeNode` to something else:
 
-```
-const formatParagraph = () => {
-  if (blockType !== "paragraph") {
-    editor.update(() => {
-      const nextSelection = $convertCodeToPlainText($getSelection());
-      
-      if ($isRangeSelection(nextSelection) || DEPRECATED_$isGridSelection(nextSelection)) {
-        $setBlocksType_experimental(nextSelection, () => $createParagraphNode());
-      }
-    });
-  }
+- Ex. 1: Paragraph transform
+  ```
+  const formatParagraph = () => {
+    if (blockType !== "paragraph") {
+      editor.update(() => {
+        const nextSelection = $convertCodeToPlainText($getSelection());
+        
+        if ($isRangeSelection(nextSelection) || DEPRECATED_$isGridSelection(nextSelection)) {
+          $setBlocksType_experimental(nextSelection, () => $createParagraphNode());
+        }
+      });
+    }
 
-  setBlockType('paragraph');
-};
-```
+    setBlockType('paragraph');
+  };
+  ```
 
-(This modified function comes straight from the Playground.)
+- Ex. 2: List transform
+
+  ```
+  const formatBulletList = () => {
+    if (blockType !== 'bullet') {
+      editor.update(() => $convertCodeToPlainText($getSelection()));
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+    } else {
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+  ```
 
 Start by normalizing the `LinedCodeNode` via `$convertCodeToPlainText(...)`.
   - This transforms the lines of code into separate paragraphs.
@@ -287,7 +311,7 @@ When off, the line-number class will be removed from the `code` element and its 
 
 This isn’t 100% perfect. 
 
-Here’s what you can do: Style line numbers and the gutter that sits behind them (see above CSS). You can also enable horizontal scrolling on long lines by adding `overflow-x: auto` to the `code` element and `white-space: pre` to each line. 
+Here’s what you can do: Style line numbers and the gutter that sits behind them (_see above CSS_). You can also enable horizontal scrolling on long lines by adding `overflow-x: auto` to the `code` element and `white-space: pre` to each line. 
 
 Here's what you can't do: `{ position sticky }`. (Maybe more.) 
 
@@ -312,7 +336,7 @@ export interface LinedCodeNodeTheme {
   [key: string]: any; // makes TS very happy
 }
 ```
-While these values aren't designed to be changed, you can still modify your node's styling at any time by updating its `themeName` property (see example below) or by updating each line's `discreteLineClasses`. 
+While these values aren't designed to be changed, you can still modify your node's styling at any time by updating its `themeName` or by updating each line's `discreteLineClasses`. 
 
 #### `themeName` 
 
@@ -390,7 +414,9 @@ The exception is drawing people's attention to certain lines — say by adding 
 
 _Please skim the code for more about individual custom methods._
 
-- Ex. On-the-fly line classes:
+Perhaps the biggest advantage of lines is being able to attention to some of them. 
+
+- Ex. Discrete and dynamic line classes:
 
   ```
   Lexical core plugin:
@@ -428,8 +454,6 @@ Use this command to add classes to your individual lines of code. For instance, 
 #### `REMOVE_DISCRETE_LINE_CLASSES_COMMAND`
 
 Use this command to remove classes from your individual lines of code. For instance, you might want to remove an “active” class that highlights the line in a special color.
-
-(See above example.)
 
 # LinedCodeTextNode
 

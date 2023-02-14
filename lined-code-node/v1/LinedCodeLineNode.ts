@@ -284,7 +284,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
             );
 
             // We just set a range selection, so
-            // we'll get a range selection back.
+            // we'll give a range selection back.
 
             return $getSelection() as RangeSelection;
           }
