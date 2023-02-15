@@ -178,7 +178,8 @@ I rely on three methods to split options from settings *and* satisfy Lexical's r
 
 - Ex. 2: Unserializable properties
   ```
-  Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. Unfortunately, Lexical bans unserializeble properties!
+  Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. 
+  Unfortunately, Lexical bans unserializeble properties!
 
   No problem. On export, `getSettingsForExportJSON` fixes the problem 
   by replacing the `tokenizer` with `null`. No fuss, no muss.
