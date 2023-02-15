@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/30417590/218910112-45bfe4ea-7426-454e-
 
 ---
 
-_Note: If you want to modify every `LinedCodeNode` in an `editor` instance at once, even when it's not in the current `selection`, you'll have to traverse your editor's nodes. The alternative is to modify individual `LinedCodeNodes` when they're in the current `selection`._
+_Note: If you want to modify every `LinedCodeNode` in an `editor` instance at once, even when it's not in the current `selection`, you'd have to traverse your editor's nodes. The alternative is to modify individual `LinedCodeNodes`, but only when they're in the current `selection`._
 
 ## Philosophy
 
