@@ -434,7 +434,7 @@ The exception is drawing people's attention to certain lines — say by adding 
 
 _Please skim the code for more about individual custom methods._
 
-Perhaps the biggest advantage of lines is being able to attention to some of them. 
+Perhaps the biggest advantage of lines is being able to draw attention to some of them. 
 
 - Ex. Discrete and dynamic line classes:
 
