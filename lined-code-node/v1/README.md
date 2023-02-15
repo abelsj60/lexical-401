@@ -163,27 +163,17 @@ This is why I created an internal paste function.
 I rely on three methods to split options from settings *and* satisfy Lexical's rules.   
 
 - `getSettings`
+
+  The standard way of getting the LinedCodeNode's current settings. A special `getLanguage()` method also exists for parity with the official `CodeNode`.
+
 - `getSettingsForCloning`
+  
+  On creation, the `initialLanguage` option is converted into the `language` setting. Without help, this is a problem for reconciliation, as we need to pass the current node’s state forward. No problem! I pass the `language` setting forward as the `initialLanguage` option via `getSettingsForExportJson`.
 - `getSettingsForExportJson`
-
-- Ex. 1: Options v. settings
-
-  ```
-  On creation, the `initialLanguage` options is converted into the `language` setting.
-
-  This is a problem for reconciliation, as we need to pass the current
-  node’s state forward. To do this, I pass `language` forward as the 
-  `initialLanguage` option via `getSettingsForExportJson`.
-  ```
-
-- Ex. 2: Unserializable properties
-  ```
-  Each `LinedCodeNode` holds the `tokenizer` as a property. This is very convenient. 
-  Unfortunately, Lexical bans unserializeble properties!
-
-  No problem. On export, `getSettingsForExportJSON` fixes the problem 
-  by replacing the `tokenizer` with `null`. No fuss, no muss.
-  ```
+  
+  Each `LinedCodeNode` holds its own `tokenizer` as a property. This is convenient. Unfortunately, Lexical bans unserializeble properties. No problem! On export, I use `getSettingsForExportJSON` to replace the `tokenizer` with `null`. 
+  
+  No fuss, no muss...
 
 ### Editor insertion
 
