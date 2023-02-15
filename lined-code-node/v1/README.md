@@ -8,6 +8,8 @@ With it, you can create dedicated Lexical code editors, call attention to specif
 
 https://user-images.githubusercontent.com/30417590/218910112-45bfe4ea-7426-454e-b84a-2c57ec20e983.mp4
 
+---
+
 _Note: If you want to modify every `LinedCodeNode` in an `editor` instance at once, even when it's not in the current `selection`, you'll have to traverse your editor's nodes. The alternative is to modify individual `LinedCodeNodes` when they're in the current `selection`._
 
 ## Philosophy
