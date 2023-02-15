@@ -6,7 +6,9 @@ The `LinedCodeNode` is very flexible.
 
 With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemes, line-number visibility, and more, at the touch of a button. 
 
-https://user-images.githubusercontent.com/30417590/218886582-1c4608ad-a107-489e-9973-b4a2abcdcdcd.mp4
+https://user-images.githubusercontent.com/30417590/218910112-45bfe4ea-7426-454e-b84a-2c57ec20e983.mp4
+
+_Note: Keep in mind, if you want to modify every `LinedCodeNode` in an `editor` instance at once, even when it's not in the current `selection`, you'll have to traverse the editor's full `nodeMap`. The typical alternative is to modify one node at a time — if it's in the current `selection`._
 
 ## Philosophy
 
@@ -41,7 +43,7 @@ _See "Inserting code" for how to insert code in the node._
 
 People don't tend to put pictures or headlines in code blocks. 
 
-The `LinedCodeNode` depends on this: import, export, and update logic works with plain text, not nodes. This makes life easier than it might be otherwise. One reason: Lexical's text-merge algorithm doesn't like multiple text tokens per line. 
+The `LinedCodeNode` depends on this: import, export, and update logic works with plain text, not nodes. Over time, I found this made life easier than it might have been otherwise. 
 
 ## Guides and patterns
 
