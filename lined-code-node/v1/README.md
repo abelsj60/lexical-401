@@ -4,13 +4,13 @@
 
 The `LinedCodeNode` is very flexible. 
 
-With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemes, line-number visibility, and more, at the touch of a button. 
+With it, you can create dedicated Lexical code editors, call attention to specific lines of code on the fly, and enable users to toggle color schemes, line-number visibility, and more, at the touch of a button. Please note, though, it's not 100% perfect. It's just the best I could do.
 
-https://user-images.githubusercontent.com/30417590/218910112-45bfe4ea-7426-454e-b84a-2c57ec20e983.mp4
+https://user-images.githubusercontent.com/30417590/219041359-3064c2cc-160c-48d1-aa83-6b6154988cab.mp4
 
 ---
 
-_Note: If you want to modify every `LinedCodeNode` in an `editor` instance at once, even when it's not in the current `selection`, you'd have to traverse your editor's nodes. The alternative is to modify individual `LinedCodeNodes`, but only when they're in the current `selection`._
+_Note: If you want to modify all your `LinedCodeNodes` at once, even when they aren't in the current `selection`, you'll have to traverse your editor's node map. The alternative is to modify individual `LinedCodeNodes`, but only when they're in the current `selection`._
 
 ## Philosophy
 
@@ -45,7 +45,7 @@ _See "Inserting code" for how to insert code in the node._
 
 People don't tend to put pictures or headlines in code blocks. 
 
-The `LinedCodeNode` depends on this: import, export, and update logic works with plain text, not nodes. Over time, I found this made life easier than it might have been otherwise. 
+The `LinedCodeNode` depends on this: import, export, and update logic work with plain text, not nodes. Over time, I found this made life easier than it might have been otherwise. 
 
 ## Guides and patterns
 

@@ -168,8 +168,6 @@ export class LinedCodeNode extends TypelessCodeNode {
     this.__tokenizer = addOptionOrNull(tokenizer);
   }
 
-  // View
-
   getTag() {
     return 'code';
   }
@@ -344,7 +342,6 @@ export class LinedCodeNode extends TypelessCodeNode {
     };
   }
 
-  // Mutation
   insertNewAfter(): ParagraphNode {
     const writableCodeNode = this.getWritable();
     const lastLine = writableCodeNode.getLastChild() as LinedCodeLineNode;
@@ -781,8 +778,6 @@ export class LinedCodeNode extends TypelessCodeNode {
       }
     });
   }
-
-  // Helpers
 
   exitOnReturn(): boolean {
     const self = this.getLatest();

@@ -49,8 +49,6 @@ export class LinedCodeTextNode extends TextNode {
     );
   }
 
-  // View
-
   createDOM(config: EditorConfig): HTMLElement {
     const self = this.getLatest();
     const line = self.getParent();
@@ -167,8 +165,6 @@ export class LinedCodeTextNode extends TextNode {
       version: 1,
     };
   }
-
-  // Mutation
 
   // Prevent formatting (bold, underline, etc)
   setFormat(_format: number) {

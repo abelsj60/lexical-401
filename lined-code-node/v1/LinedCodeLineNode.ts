@@ -57,8 +57,6 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
     this.__discreteLineClasses = discreteLineClasses || '';
   }
 
-  // View
-
   createDOM(): HTMLElement {
     const self = this.getLatest();
     const codeNode = self.getParent();
@@ -158,8 +156,6 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
       version: 1,
     };
   }
-
-  // Mutation
 
   append(...nodesToAppend: LexicalNode[]): this {
     const self = this.getLatest();
@@ -351,8 +347,6 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
 
     return result;
   }
-
-  // Helpers
 
   getDiscreteLineClasses() {
     return this.getLatest().__discreteLineClasses;
