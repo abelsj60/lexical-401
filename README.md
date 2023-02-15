@@ -19,15 +19,6 @@ And that's how Lexical 401 was born. I may be the only one to use it, but you're
 
 ## FAQ
 
-<details><summary>What's your project?</summary>
-<p>
-
-I'd like to help people collaborate with AI in order to tell better stories online. 
-
-I hope to have more to say about that later. For now, enjoy the library. 
-</p>
-</details>
-
 <details><summary>How do I add something?</summary>
 <p>
 
@@ -45,6 +36,15 @@ I hope to have more to say about that later. For now, enjoy the library.
 Good question. I don't rightly know. This is a bare bones operation. There are no tests, no build processes, no `npm` anythings. Maybe that'll change at some point. In the meantime, you could contact the original author with questions or Pull Request a new version. 
 
 Mostly, though, I imagine you'll use this code to whip up your own thing and go from there.
+</p>
+</details>
+
+<details><summary>What's your project?</summary>
+<p>
+
+I'd like to help people collaborate with AI in order to tell better stories online. 
+
+I hope to have more to say about that later. For now, enjoy the library. 
 </p>
 </details>
 
