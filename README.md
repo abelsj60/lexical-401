@@ -14,7 +14,7 @@ And that's how Lexical 401 was born. I may be the only one to use it, but you're
 
 -j (abelsj60@gmail.com)
 
-*--Note: This repo is released under the [MIT license](https://github.com/abelsj60/lexical-401/blob/main/LICENSE.md). It applies to [all contributors, per GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license).* Please see [LICENSE.md](https://github.com/abelsj60/lexical-401/blob/main/LICENSE.md) for more.
+*--Note: This repo is released under [MIT License](https://github.com/abelsj60/lexical-401/blob/main/LICENSE.md). It applies to [all contributors, per GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license). Please see [LICENSE.md](https://github.com/abelsj60/lexical-401/blob/main/LICENSE.md) for more.*
 
 ## FAQ
 
