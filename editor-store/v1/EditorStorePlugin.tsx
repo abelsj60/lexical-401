@@ -28,7 +28,7 @@ export function EditorStorePlugin({
   React.useEffect(() => {
     // On its own, relocation adds an extra and unwanted entry on the undoStack. 
     // Why? Newly mounted React-based Lexical plugins will cause their various 
-    // Lexical liseners to re-register on the editor istance. The problem is 
+    // Lexical liseners to re-register on the editor instance. The problem is 
     // transforms. They invoke 'markAllNodesDirty,' thereby causing the 
     // history package to 'push' a new entry onto the undoStack. 
 

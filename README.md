@@ -14,8 +14,7 @@ And that's how Lexical 401 was born. I may be the only one to use it, but you're
 
 -j (abelsj60@gmail.com)
 
---
-*Note: All code is *as is*. I make no warranties, representations, or promises about any of it whatsoever. Use it at your own risk.*
+*--Note: This repo is released under the [MIT license](./README.md). It applies to [all contributors, per GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license).* Please see [LICENSE.md](./README.md) for more.
 
 ## FAQ
 

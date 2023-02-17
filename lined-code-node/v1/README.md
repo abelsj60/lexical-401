@@ -297,12 +297,12 @@ Sometimes you want line numbers, sometimes you don’t.
 
 Sometimes you want to turn them on and off. This option can help. 
 
-Individual lines always track their own line number via a node property and data attribute, however, their visibility depends on your CSS. You can pass your own classname via the `LinedCodeNode`'s `theme` or use the fallback, "code-line-number."
+Individual lines always track their own line number via a node property and data attribute, however, their visibility depends on your CSS. You can pass your own classname via the `LinedCodeNode`'s `theme` or use the fallback, "line-number."
 
 - Ex. Line number styling via pseudoclass
 
   ```
-  .code-line-number.PlaygroundEditorTheme__code:before { // CODE ELEMENT
+  .line-number.PlaygroundEditorTheme__code:before { // CODE ELEMENT
     background-color: #eee;
     border-right: 1px solid #ccc;
     content: '';
@@ -313,7 +313,7 @@ Individual lines always track their own line number via a node property and data
     top: 0;
   }
 
-  .code-line-number:before { // CHILD DIVS (LINES)
+  .line-number:before { // CHILD DIVS (LINES)
     color: #777;
     content: attr(data-line-number);
     left: 0px;
@@ -388,7 +388,7 @@ Do note, though, I've only tested the Prism `tokenizer` against the method that 
 ```
 The `LinedCodeNode` tokenizes text via a multi-step process: 
 
-- Tokenize the text, 
+- Tokenize the text
 - Create a set of normalized tokens 
 - Convert the normalized tokens into `LinedCodeTextNodes`
 
@@ -432,11 +432,11 @@ The exception is drawing people's attention to certain lines — say by adding 
 
 ### Methods
 
-_Please skim the code for more about individual custom methods._
+#### `addDiscreteLineClasses` and `removeDiscreteLineClasses`
 
-Perhaps the biggest advantage of lines is being able to draw attention to some of them. 
+Perhaps the biggest advantage to lines is drawing user attention to them. For instance, you might want to improve a tutorial by using line highlights to direct user attention. 
 
-- Ex. Discrete and dynamic line classes:
+- Ex. Dynamically adding discrete line classes:
 
   ```
   Lexical core plugin:
@@ -463,15 +463,17 @@ Perhaps the biggest advantage of lines is being able to draw attention to some o
       line.removeDiscreteLineClasses(ACTIVE_LINE_CLASS);
     }
   }
-  ```
+  ```2
+
+_Please skim the code for more about all the other custom methods._
 
 ### Commands
 
-#### `ADD_DISCRETE_LINE_CLASSES_COMMAND`
+`ADD_DISCRETE_LINE_CLASSES_COMMAND`
 
 Use this command to add classes to your individual lines of code. For instance, you might want to add an “active” class that highlights the line in a special color. You can also do this via its sibling method.
 
-#### `REMOVE_DISCRETE_LINE_CLASSES_COMMAND`
+`REMOVE_DISCRETE_LINE_CLASSES_COMMAND`
 
 Use this command to remove classes from your individual lines of code. For instance, you might want to remove an “active” class that highlights the line in a special color.
 
