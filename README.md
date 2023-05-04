@@ -84,7 +84,7 @@ _Just for fun, feel free to add yours..._
   - [Make a floating menu](https://konstantin.digital/blog/how-to-build-a-floating-menu-with-lexical-react) (bonus: [Plugin code](https://github.com/konstantinmuenster/lexical-floating-menu))
   - [Make a text editor](https://konstantin.digital/blog/how-to-build-a-text-editor-with-lexical-and-react)
 
-- Lexical core team
+- Lexical core team videos
   - [Nodes-n-plugins w/Acy](https://youtu.be/abZNazybzvs)
   - [Headings, lists, toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
   - [Themes, nodes, rich text w/Acy](https://youtu.be/pIBUFYd9zJY)
