@@ -87,7 +87,7 @@ _Just for fun, feel free to add yours..._
 - Core team videos
   - [Nodes-n-plugins w/Acy](https://youtu.be/abZNazybzvs)
   - [Headings, lists, and the toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
-  - [Themes, nodes, and rich text plugin w/Acy](https://youtu.be/pIBUFYd9zJY)
+  - [Themes, nodes, and the rich text plugin w/Acy](https://youtu.be/pIBUFYd9zJY)
   - [Three questions w/Gerard and Maksim](https://youtu.be/Vpv0BYhhlak)
   - [Getting started w/Acy](https://youtu.be/qIqxvk2qcmo)
   - [UtahJS meetup w/Acy](https://youtu.be/EwoS0dIx_OI)
