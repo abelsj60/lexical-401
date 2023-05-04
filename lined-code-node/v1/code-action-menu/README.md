@@ -1,10 +1,40 @@
 # CodeActionMenu
 
-I know, the Playground has a nifty code-action menu. 
+I know, the Playground has a nifty code-action menu.
 
-Last I checked, it'll work with the following minor update to this function [(original file)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx): 
+Last I checked, it'll work with two minor updates.
 
+1. [(original file)] (https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/index.tsx)
+
+```ts
+function getMouseInfo(event: MouseEvent): {
+  codeDOMNode: HTMLElement | null;
+  isOutside: boolean;
+} {
+  const target = event.target;
+
+  if (target && target instanceof HTMLElement) {
+    const codeDOMNode = target.closest<HTMLElement>(
+      // HERE 👇 MATCH YOUR LINED-CODE-NODE CLASS NAME
+      // (THIS IS THE DEFAULT CLASS)
+
+      'code.lined-code-node',
+    );
+    const isOutside = !(
+      codeDOMNode ||
+      target.closest<HTMLElement>('div.code-action-menu-container')
+    );
+
+    return {codeDOMNode, isOutside};
+  } else {
+    return {codeDOMNode: null, isOutside: true};
+  }
+}
 ```
+
+2. [(original file)](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/components/PrettierButton/index.tsx):
+
+```ts
 export function PrettierButton({lang, editor, getCodeDOMNode}: Props) {
   const [syntaxError, setSyntaxError] = useState<string>('');
   const [tipsVisible, setTipsVisible] = useState<boolean>(false);
@@ -35,11 +65,12 @@ export function PrettierButton({lang, editor, getCodeDOMNode}: Props) {
             console.error('Unexpected error: ', error);
           }
         }
+
+        // HERE! 👇 UPDATE THIS IF BLOCK! 🤞 THAT SHOULD BE IT...
+        // LEXICAL SHOULD SEE LINED_CODE_NODE AS CODE_NODE...
+
         if (parsed !== '') {
           const parsedTextByLine = parsed.split(/\n/);
-
-          // HERE! 👇 UPDATE THIS STATEMENT! 🤞 THAT SHOULD BE IT...
-
           codeNode.getChildren<LinedCodeLineNode>().forEach((line, index) => {
             if (line.getTextContent() !== parsedTextByLine[index]) {
               codeNode.replaceLineCode(parsedTextByLine[index], line);

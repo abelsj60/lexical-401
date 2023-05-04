@@ -1,5 +1,4 @@
-import { $createLineBreakNode, TextNode } from 'lexical';
-
+/* eslint-disable header/header */
 import type {
   DOMExportOutput,
   EditorConfig,
@@ -10,9 +9,11 @@ import type {
   Spread,
 } from 'lexical';
 
+import { $createLineBreakNode, TextNode } from 'lexical';
+
+import { $isLinedCodeLineNode } from './LinedCodeLineNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
 import {addClassNamesToElement, getHighlightThemeClass, removeClassNamesFromElement} from './utils';
-import { $isLinedCodeLineNode } from './LinedCodeLineNode';
 
 type SerializedLinedCodeTextNode = Spread<
   {
@@ -56,11 +57,11 @@ export class LinedCodeTextNode extends TextNode {
 
     if ($isLinedCodeLineNode(line)) {
       const codeNode = line.getParent();
-  
+
       if ($isLinedCodeNode(codeNode)) {
         const {theme: codeNodeTheme} = codeNode.getSettings();
         const { highlights: highlightClasses } = codeNodeTheme || {};
-        
+
         if (highlightClasses !== undefined) {
           highlightClass = getHighlightThemeClass(
             highlightClasses,
@@ -90,11 +91,11 @@ export class LinedCodeTextNode extends TextNode {
 
     if ($isLinedCodeLineNode(line)) {
       const codeNode = line.getParent();
-  
+
       if ($isLinedCodeNode(codeNode)) {
         const {theme: codeNodeTheme} = codeNode.getSettings();
         const { highlights: highlightClasses } = codeNodeTheme || {};
-  
+
         if (highlightClasses) {
           const prevHighlightClass = getHighlightThemeClass(
             highlightClasses,
@@ -104,7 +105,7 @@ export class LinedCodeTextNode extends TextNode {
             highlightClasses,
             self.__highlightType,
           );
-        
+
           if (prevHighlightClass) {
             removeClassNamesFromElement(dom, prevHighlightClass);
           }
@@ -139,7 +140,7 @@ export class LinedCodeTextNode extends TextNode {
 
     if (element) {
       const isBlankString = element.innerText === '';
-      
+
       // If the point is on the last line character, Lexical
       // will create a textNode with a blank string ('').
       // This isn't good, so we counteract it here.

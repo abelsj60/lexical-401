@@ -1,3 +1,5 @@
+/* eslint-disable header/header */
+import type { LinedCodeTextNode } from './LinedCodeTextNode';
 import type {
   LexicalNode,
   NodeKey,
@@ -6,19 +8,17 @@ import type {
   SerializedParagraphNode,
   Spread,
 } from 'lexical';
+
 import {
-  ParagraphNode,
   $getSelection,
   $isRangeSelection,
   $isTextNode,
+  ParagraphNode,
 } from 'lexical';
 
-import type {LinedCodeNode} from './LinedCodeNode';
-import {$createLinedCodeNode} from './LinedCodeNode';
-import {$isLinedCodeNode} from './LinedCodeNode';
-import type { LinedCodeTextNode } from './LinedCodeTextNode';
+import {$createLinedCodeNode, $isLinedCodeNode, LinedCodeNode} from './LinedCodeNode';
 import { $isLinedCodeTextNode } from './LinedCodeTextNode';
-import {getLinesFromSelection, addClassNamesToElement, isTabOrSpace, removeClassNamesFromElement} from './utils';
+import {addClassNamesToElement, getLinesFromSelection, isTabOrSpace, removeClassNamesFromElement} from './utils';
 
 type SerializedLinedCodeLineNode = Spread<
   {
@@ -51,7 +51,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
     super(key);
 
     // This generally isn't set during initialization. It's set during
-    // user interaction. However, it's included in the constructor 
+    // user interaction. However, it's included in the constructor
     // so .clone and .updateDOM it during reconciliation.
 
     this.__discreteLineClasses = discreteLineClasses || '';
@@ -77,17 +77,17 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
           if (lineBase) {
             codeLineClasses.push(lineBase);
           }
-  
+
           if (lineExtension) {
             codeLineClasses.push(lineExtension);
           }
         }
-        
+
         if (lineNumbers && numberClass) {
           codeLineClasses.push(numberClass);
         }
       }
-      
+
       addClassNamesToElement(dom, codeLineClasses.join(' '));
       dom.setAttribute('data-line-number', `${self.getLineNumber()}`);
     }
@@ -101,7 +101,7 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
   ): boolean {
     const self = this.getLatest();
     const codeNode = self.getParent();
-    
+
     const nextLineClasses = self.getDiscreteLineClasses();
     const prevLineClasses = prevNode.__discreteLineClasses as string;
 
@@ -160,24 +160,24 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
   append(...nodesToAppend: LexicalNode[]): this {
     const self = this.getLatest();
     let codeNode: LinedCodeNode | null;
-    
+
     const readyToAppend = nodesToAppend.reduce((ready, node) => {
       if ($isLinedCodeTextNode(node)) {
         ready.push(node);
       } else if ($isTextNode(node)) {
         codeNode = self.getParent();
-    
+
         if (!$isLinedCodeNode(codeNode)) {
           // If we're here, the line's new. It hasn't been
           // appended to a CodeNode yet. We'll make one
           // so we can use its methods...
-          
+
           codeNode = $createLinedCodeNode();
         }
-        
+
         const code = codeNode.getHighlightNodes(node.getTextContent());
         ready.push(...code);
-      } 
+      }
 
       return ready;
     }, [] as LinedCodeTextNode[]);
@@ -209,30 +209,30 @@ export class LinedCodeLineNode extends TypelessParagraphNode {
         splitText = [],
         topLine: line,
       } = getLinesFromSelection(selection);
-  
+
       if ($isLinedCodeLineNode(line)) {
         const writableLine = line.getWritable();
         const newLine = $createLinedCodeLineNode();
         const lineOffset = writableLine.getLineOffset(topPoint);
         const firstCharacterIndex = writableLine.getFirstCharacterIndex(lineOffset);
-        
+
         if (firstCharacterIndex > 0) {
           const [textBeforeSplit] = splitText;
           const whitespace = textBeforeSplit.substring(0, firstCharacterIndex);
           const code = codeNode.getHighlightNodes(whitespace);
-          
+
           newLine.append(...code);
           writableLine.insertAfter(newLine);
-  
-          // Lexical can't 'select' the a newLine's leading whitespace 
+
+          // Lexical can't 'select' the a newLine's leading whitespace
           // on its own, so we'll do it in mutation listener. See
-          // the LinedCodePlugin for more. 
-  
+          // the LinedCodePlugin for more.
+
           return newLine;
         }
       }
     }
-    
+
     return super.insertNewAfter(selection, restoreSelection);
   }
 

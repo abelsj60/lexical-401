@@ -65,6 +65,7 @@ _Just for fun, feel free to add yours..._
 ### Publishing systems
 
 - [Isaac Editor](https://isaaceditor.com/) | Academic writing with AI
+- [Medium](https://github.com/wingedrasengan927/lexical-medium-clone) | Lexical Medium clone
 - [Storycraft](https://storycraft.pro/) | Telling stories with AI
 
 ### Augmentations
@@ -76,3 +77,17 @@ _Just for fun, feel free to add yours..._
 
 - [Dossier](https://www.dossierhq.dev/) | Build your own headless CMS
 - [Payload plugin](https://github.com/AlessioGr/payload-plugin-lexical) | Use Lexical with Payload CMS
+
+### Deep dives
+
+- The world at large
+  - [Make a floating menu](https://konstantin.digital/blog/how-to-build-a-floating-menu-with-lexical-react) ([Bonus: Plugin code](https://github.com/konstantinmuenster/lexical-floating-menu))
+  - [Make a text editor](https://konstantin.digital/blog/how-to-build-a-text-editor-with-lexical-and-react)
+
+- Lexical core team
+  - [Getting started w/Acy](https://youtu.be/qIqxvk2qcmo)
+  - [Themes, nodes, rich text w/Acy](https://youtu.be/pIBUFYd9zJY)
+  - [Headings, lists, toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
+  - [Nodes-n-plugins w/Acy](https://youtu.be/abZNazybzvs)
+  - [Three q's w/Gerard and Maksim](https://youtu.be/Vpv0BYhhlak)
+  - [UtahJS meetup w/Acy](https://youtu.be/EwoS0dIx_OI)
