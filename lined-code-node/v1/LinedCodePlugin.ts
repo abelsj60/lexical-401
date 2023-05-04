@@ -5,6 +5,7 @@ import type {
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_LOW, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_TAB_COMMAND, MOVE_TO_END, MOVE_TO_START, PASTE_COMMAND } from 'lexical';
+import {mergeRegister} from '@lexical/utils';
 import * as React from 'react';
 
 import {
@@ -327,11 +328,4 @@ export default function LinedCodePlugin(): JSX.Element | null {
   }, [editor]);
 
   return null;
-}
-
-type Func = () => void;
-export function mergeRegister(...func: Array<Func>): () => void {
-  return () => {
-    func.forEach((f) => f());
-  };
 }
