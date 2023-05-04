@@ -14,7 +14,7 @@ _Note: Generally speaking, each `LinedCodeNode` is self-contained. To modify all
 
 ### CodeSandbox
 
-https://codesandbox.io/embed/muddy-feather-52r2k2?fontsize=14&hidenavigation=1&theme=dark
+https://codesandbox.io/s/linedcodenode-lexical-52r2k2
 
 _Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.com. If so, try opening its browser in a new tab._
 
