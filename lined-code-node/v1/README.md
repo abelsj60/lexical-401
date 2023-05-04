@@ -4,31 +4,35 @@ _Ver: 1.01_
 
 ## Overview
 
-Lexical can't place code in lines by default.
+By default, Lexical can't put code in lines.
 
-The `LinedCodeNode` can. This is useful when creating code editors, calling attention to specific lines, or toggling color schemes, line-number visibility, and more, at the touch of a button.
+The `LinedCodeNode` can. This is useful when calling attention to specific lines, creating code editors, and more.
 
 https://user-images.githubusercontent.com/30417590/219041359-3064c2cc-160c-48d1-aa83-6b6154988cab.mp4
 
-_Note: Generally speaking, each `LinedCodeNode` works on its own. To modify all of them at once, you should follow the usual practice of traversing the Lexical node map._
+_Note: Generally speaking, each `LinedCodeNode` is self-contained. To modify all of them at once, you should follow the usual practice of traversing the Lexical node map._
 
 ### CodeSandbox
 
 https://codesandbox.io/embed/muddy-feather-52r2k2?fontsize=14&hidenavigation=1&theme=dark
 
-_Note: Using Brave? The `CodeActionMenu`'s copy button may fail in the CodeSandbox.com page. Try popping opening its browser window open in a new tab. It should work fine._
+_Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.com. If so, try opening its browser in a new tab._
 
 ---
 
 ## Philosophy
 
-### Control and structure
+### Node-level settings
 
-Most LexicalNodes are controlled by the editor instance.
+Generally speaking, most `LexicalNodes` are controlled by the editor instance and selection.
 
-By contrast, each `LinedCodeNode` controls its own settings and internal nodes, including its `code-line` and `code-text` nodes.
+By contrast, each `LinedCodeNode` controls its own internal operation, including tokenization, line classes, and node creation.
 
-Internally, it looks like this:
+In practical terms, this means you can configure each node by passing a settings object to the node via `$createLinedCodeNode`. You can also provide a set of default settings when adding the `LinedCodeNodes` to your `LexicalComposer`'s nodes array. (Automatic fallbacks take over when you don't.)
+
+### Tree view
+
+Internally, the `LinedCodeNode` looks like this:
 
 ```jsx
 Root (<div />)
@@ -44,13 +48,17 @@ Root (<div />)
     Text/code (<span />)
     Linebreak (<br />)
 ```
-The `LinedCodeNode` has an unusual internal structure because it uses the Override API to swap code-lines for paragraphs and code-text for text whenever the `selection` is inside a <code /\> element.
+As you can see, the `LinedCodeNode` puts code in lines. This was difficult to achieve. I've done it by:
 
-### Running on text
+- Marking the `LinedCodeNode`'s DOM element ("`code`") `shadowRoot`, and
+- Using the Override API to replace its paragraphs and text with code lines and code highlights.
+  - This is done by testing whether the current `selection` is in a "`code`" element. If it is, the swaps occur. Otherwise, they do not.
 
-Internally, the `LinedCodeNode` works with plain text.
+### Plain-text logic
 
-It's constantly converting highlighted text into plain text, performing whatever calculations the user wants, and re-highlighting line text for display on screen. Over time, I learned this is the easiest way to handle lined code in Lexical.
+Internally, the `LinedCodeNode` revolves around plain text.
+
+On update, it reads each line's plain text, runs some update logic, then refreshes the results.
 
 ## Guides and patterns
 
@@ -97,75 +105,73 @@ You can get the `LinedCodeNode` up and running in three easy steps:
     }
     ```
 
-    The `LinedCodeNode` will automatically add the following default class names:
+    The following fallback classes are automatically added to each node:
 
     - `block: { base: ‘lined-code-node’ }`
     - `line: { base: ‘code-line’ }`
     - `numbers: ‘line-number’`
 
-    You can override these values with your own custom class names by passing a default theme object to `getLinedCodeNodes: { theme: defaultThemeValues }`. You can also override the defaults by passing a theme object to each call to `$createLinedCodeNode( { theme })`.
+    To use your own class names, pass a theme to `getLinedCodeNodes`. You can override them by passing a custom theme to `$createLinedCodeNode`.
 
-    Here’s a sample of how you might structure your css:
+    - Here’s an example of how you might structure your css:
 
-    ```css
-    .lined-code-node {
-      background-color: rgb(240, 242, 245);
-      font-family: Menlo, Consolas, Monaco, monospace;
-      display: block;
-      padding: 8px;
-      line-height: 1.53;
-      font-size: 13px;
-      margin: 0;
-      margin-top: 8px;
-      margin-bottom: 8px;
-      tab-size: 2;
-      overflow-x: auto;
-      position: relative;
-    }
+      ```css
+      .lined-code-node {
+        background-color: rgb(240, 242, 245);
+        font-family: Menlo, Consolas, Monaco, monospace;
+        display: block;
+        padding: 8px;
+        line-height: 1.53;
+        font-size: 13px;
+        margin: 0;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        tab-size: 2;
+        overflow-x: auto;
+        position: relative;
+      }
 
-    .lined-code-node.line-number {
-      padding-left: 52px;
-    }
+      .lined-code-node.line-number {
+        padding-left: 52px;
+      }
 
-    /* This selector creates a styled gutter for line numbers. */
+      /* This selector creates a styled gutter for line numbers. */
 
-    .lined-code-node.line-number:before {
-      background-color: #eee;
-      border-right: 1px solid #ccc;
-      content: '';
-      height: 100%;
-      left: 0;
-      min-width: 41px;
-      position: absolute;
-      top: 0;
-    }
+      .lined-code-node.line-number:before {
+        background-color: #eee;
+        border-right: 1px solid #ccc;
+        content: '';
+        height: 100%;
+        left: 0;
+        min-width: 41px;
+        position: absolute;
+        top: 0;
+      }
 
-    /* This selector creates line numbers and places them within the above styled gutter. As a result, the gutter never breaks. */
+      /* This selector creates line numbers and places them within the above styled gutter. As a result, the gutter never breaks. */
 
-    .line-number:before {
-      color: #777;
-      content: attr(data-line-number);
-      left: 0px;
-      min-width: 33px;
-      position: absolute;
-      text-align: right;
-    }
+      .line-number:before {
+        color: #777;
+        content: attr(data-line-number);
+        left: 0px;
+        min-width: 33px;
+        position: absolute;
+        text-align: right;
+      }
 
-    .code-line {
-      white-space: pre;
-    }
-    .code-line:hover {
-      background-color: yellow;
-    }
-    ```
-
-That should do it. Great. Let's talk about what's under the hood.
+      .code-line {
+        white-space: pre;
+      }
+      .code-line:hover {
+        background-color: yellow;
+      }
+      ```
 
 ### Default settings
 
-Eagle-eyed readers will notice that `getLinedCodeNodes` takes a default settings object. You can override them at any time by passing an options object to `$createLinedCodeNode()`.
+Eagle-eyed readers noticed that `getLinedCodeNodes` takes a default settings object.
 
-See "API highlights" for a discussion of each default.
+To override them, simply pass a custom object to `$createLinedCodeNode`. The shape should be the same.
 
 ### Inserting code
 
@@ -190,37 +196,29 @@ There are two ways to insert code into a `LinedCodeNode`:
   codeNode.append(codeLine);
   ```
 
-### Import, export, and serialization
+### Some internals
 
-The importance of import, export, and serialization can't be understated.
+#### `importDOM`
 
-- Export allows text to be copied from Lexical.
-- Import allows text to be inserted into Lexical.
-- Serialization helps update the DOM to match Lexical's internal state.
+The `LinedCodeNode`'s method handles all internal imports, meaning neither `LinedCodeLineNode` nor `LinedCodeTextNode` use their `importDOM`.
 
-The `LinedCodeNode` requires a little special handling on all three fronts. Let's review them.
+#### `exportDOM`
 
-#### Import
+Say you copy three lines of code from a `LinedCodeNode`.
 
-The `LinedCodeNode`'s `importDOM` method handles everything inside of it. As a result, the `LinedCodeLineNode` and `LinedCodeTextNode` don't do anything on this front.
+If you paste them into a Google Doc, you'll want to see your text as code. To do this, I have to nest your text in a "`code`" element on export.
 
-#### Export
+What happens if you never leave Lexical, though? Well, if you pasted your code/text into a `LinedCodeNode`, you'd get — GASP — _nested code nodes_!
 
-This is best explained with an example.
+I couldn't fix this by changing `exportDOM` because I can't know _where_ you're pasting. So I did something else. I created an "internal" paste method. It'll strip the "`code`" element out if you paste inside one.
 
-Say you copy three lines from a `LinedCodeNode` and paste them into Google Docs. You'll probably want `exportDOM` to include a code element so Google will show your code as code.
+Now you've got the best of both worlds.
 
-But, what happens if you paste the same text inside an existing Lexical `LinedCodeNode`? You wouldn't want to create a nested code node, which is what Lexical will do with that same code element
+#### `clone` serialization
 
-Something's gotta give. There's no way to distinguish between these cases via `exportDOM`, so you've got to handle it via `importDOM` somehow. The easiest thing to do, I found, was add an internal paste function to the `LinedCodeNode`. It knows how to handle this situation.
+Every `LinedCodeNode` can take its own settings. Unfortunately, some of these settings can break some important Lexical rules.
 
-#### Serialization
-
-As you know, you can hand every `LinedCodeNode` its own settings.
-
-They can range from a custom tokenizer to theme. This is great. Really flexible. Unfortunately, these settings can break some very important Lexical rules, such as no function properties!
-
-The `LinedCodeNode` uses three methods to obviate this problem:
+Here's how I deal with them:
 
 - `getSettings`
 
@@ -228,7 +226,8 @@ The `LinedCodeNode` uses three methods to obviate this problem:
 
 - `getSettingsForCloning`
 
-  On creation, the `initialLanguage` option is converted to the `language` property. This could be a problem for reconciliation, as we need to pass the current node’s state forward. Done! This method passes `language` forward as `initialLanguage`.
+  On creation, the setting for `initialLanguage` is converted to the `language` property. This is a problem for reconciliation, as I have to pass the current node’s state forward. No problem. This method passes `language` forward as `initialLanguage`.
+
 - `getSettingsForExportJson`
 
   Each `LinedCodeNode` contains its own `tokenizer`. Sadly, Lexical bans unserializeble function properties. No problem! This method replaces it with `null` on export.
@@ -236,8 +235,6 @@ The `LinedCodeNode` uses three methods to obviate this problem:
 ### Editor insertion
 
 It's easy to insert a `LinedCodeNode` into a Lexical editor:
-
-- Ex. Easy-peasy node insertion
 
   ```ts
   const formatCode = (options: LinedCodeNodeOptions) => {
@@ -260,40 +257,39 @@ It's easy to insert a `LinedCodeNode` into a Lexical editor:
 
 It's pretty easy to convert a `LinedCodeNode` to another node.
 
-- First, use `$convertCodeToPlainText($getSelection())` to transform each line of code into its own paragraph.
-  - It returns an updated `selection`. It applies the previous selection offsets to the new nodes. You can review how ranges are handled at your leisure.
+- First: Use `$convertCodeToPlainText($getSelection())` to transform each line of code into its own paragraph.
+  - This function returns an updated `selection`. The new `selection` applies the previous one's offsets to your new nodes.
 
-Now, call `$setBlocksType` to convert your new paragraphs into any node supported by `setBlocks`. You could also call a command. Whatever you want.
+- Second: Use `$setBlocksType` to convert your new paragraphs into another kind of node. You could also call a command. Whatever you want.
 
-- Ex. 1: Paragraph transform
-  ```ts
-  const formatParagraph = () => {
-    if (blockType !== "paragraph") {
-      editor.update(() => {
-        const nextSelection = $convertCodeToPlainText($getSelection());
+    Ex. 1: Paragraph transform
+    ```ts
+    const formatParagraph = () => {
+      if (blockType !== "paragraph") {
+        editor.update(() => {
+          const nextSelection = $convertCodeToPlainText($getSelection());
 
-        if ($isRangeSelection(nextSelection) || DEPRECATED_$isGridSelection(nextSelection)) {
-          $setBlocksType(nextSelection, () => $createParagraphNode());
-        }
-      });
-    }
+          if ($isRangeSelection(nextSelection) || DEPRECATED_$isGridSelection(nextSelection)) {
+            $setBlocksType(nextSelection, () => $createParagraphNode());
+          }
+        });
+      }
 
-    setBlockType('paragraph');
-  };
-  ```
+      setBlockType('paragraph');
+    };
+    ```
 
-- Ex. 2: List transform
-
-  ```ts
-  const formatBulletList = () => {
-    if (blockType !== 'bullet') {
-      editor.update(() => $convertCodeToPlainText($getSelection()));
-      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-    } else {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-    }
-  };
-  ```
+    Ex. 2: List transform
+    ```ts
+    const formatBulletList = () => {
+      if (blockType !== 'bullet') {
+        editor.update(() => $convertCodeToPlainText($getSelection()));
+        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+      } else {
+        editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+      }
+    };
+    ```
 
 ### Markdown
 
@@ -328,25 +324,13 @@ export interface LinedCodeNodeOptions {
 
 - fallback: `false`
 
-Lexical turns tabs off by default, instead preferring to dedicate the tab button to navigation. I’ve added an option to activate tabs within `LinedCodeNodes`. When active, tabs will work as expected when the `selection` is inside a `LinedCodeNode`.
+Lexical turns tabs off by default. I’ve added an option to activate them within `LinedCodeNodes`. When active, tabs will work as expected when the `selection` is in a `LinedCodeNode`.
 
 #### `defaultLanguage`
 
 - fallback: `javascript`
 
-You’ll pretty much always want a `LinedCodeNode` to start with an initial language. You may also want to allow the block’s language to be reset via a button. The `defaultLanguage` setting makes both easy. It takes over when you don’t pass an `initialLanguage`.
-
-#### `isLockedBlock`
-
-- fallback: `false`
-
-By default, Lexical allows users to exit the `LinedCodeNode` by
-
-1. Hitting enter three times in a row at the end of the code block.
-2. Hitting backspace when the selection is at the first offset of the code block’s first line.
-3. Hitting enter after using the up/down arrow to select the root node while at the top or bottom of a code block that's at the top or bottom of Lexical.
-
-Use this option to disables all three behaviors.
+You’ll pretty much always want a `LinedCodeNode` to start with an initial language. You may also want users to reset the block’s language by button. The `defaultLanguage` setting makes both easy. It takes over when you don’t pass an `initialLanguage`.
 
 #### `initialLanguage`
 
@@ -354,13 +338,25 @@ Use this option to disables all three behaviors.
 
 Use this option to set the `LinedCodeNode’s` initial language.
 
+#### `isLockedBlock`
+
+- fallback: `false`
+
+By default, Lexical allows users to exit the `LinedCodeNode` by
+
+1. Hitting "enter" three times in a row at the end of the code block.
+2. Hitting "backspace" when the selection is at the first offset of the code block’s first line.
+3. Hitting "enter" after using the up/down arrow to select the root node while at the top or bottom of a code block that's at the top or bottom of Lexical.
+
+Use this option to disables all three behaviors.
+
 #### `lineNumbers`
 
 - fallback: `true`
 
 Sometimes you want line numbers, sometimes you don’t.
 
-Sometimes you want to be able to toggle them on and off. This option can help.
+Sometimes you want to let users toggle them on and off. This option can help.
 
 Individual lines always track their own line number via a node property and data attribute, however, their visibility depends on CSS. See "Quick start" for more.
 
@@ -388,11 +384,11 @@ Individual lines always track their own line number via a node property and data
   }
   ```
 
-If you enable line numbers, toggle visibility via the `LinedCodeNode`'s `toggleLineNumbers` method. Toggling's handled by adding and removing the `line-number` class on the fly.
+If you enable line numbers, toggle visibility via the `LinedCodeNode`'s `toggleLineNumbers` method. Toggling is handled by adding and removing the `line-number` class on the fly.
 
 ##### Capabilities and limitations
 
-Here’s what works: Style line numbers and the gutter that sits behind them (_see above CSS_). You can also enable horizontal scrolling on long lines by adding `overflow-x: auto` to the `code` element and `white-space: pre` to each line.
+Here’s what works: Styling line numbers and the line-number gutter, as well as enabling horizontal scrolling on long lines (add `overflow-x: auto` to the "`code`" element and `white-space: pre` to each line).
 
 Here's what doesn't work: `{ position sticky }`. (Maybe more.)
 
@@ -400,7 +396,7 @@ Here's what doesn't work: `{ position sticky }`. (Maybe more.)
 
 - fallback: `{}`
 
-The `LinedCodeNode` accepts a theme object on creation.
+The `LinedCodeNode` accepts a `theme` on creation.
 
 ```ts
 export interface LinedCodeNodeTheme {
@@ -417,7 +413,6 @@ export interface LinedCodeNodeTheme {
   [key: string]: any; // makes TS very happy
 }
 ```
-Only some of these values can be changed directly on the fly. The rest can varied by using the `themeName` or by using each line's `discreteLineClasses` methods.
 
 #### `themeName`
 
@@ -444,7 +439,7 @@ Change your `LinedCodeNode`'s styling on the fly.
 
 You should be able to use your own tokenizers with the `LinedCodeNode`.
 
-Simply use the `Tokenizer` interface to pass a function to `$createLinedCodeNode`.
+Simply use the `Tokenizer` interface to pass a function to `getLinedCodeNodes` and/or `$createLinedCodeNode`.
 
 Note: I've only tested the Prism `tokenizer` against the method that creates normalized tokens. If you try another one and it breaks, let me know. Maybe I can fix it.
 
