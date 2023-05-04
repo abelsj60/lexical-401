@@ -1,7 +1,10 @@
-import {ParagraphNode, TextNode} from 'lexical';
+/* eslint-disable header/header */
+import type {
+  LinedCodeNodeOptions,
+} from './LinedCodeNode';
+
 import { CodeNode } from '@lexical/code';
-import {getCodeLanguage, PrismTokenizer} from './Prism';
-import {LinedCodeTextNode} from './LinedCodeTextNode';
+import {ParagraphNode, TextNode} from 'lexical';
 
 import {$createLinedCodeLineNode, LinedCodeLineNode} from './LinedCodeLineNode';
 import {
@@ -9,9 +12,8 @@ import {
   $isLinedCodeNode,
   LinedCodeNode,
 } from './LinedCodeNode';
-import type {
-  LinedCodeNodeOptions,
-} from './LinedCodeNode';
+import {LinedCodeTextNode} from './LinedCodeTextNode';
+import {getCodeLanguage, PrismTokenizer} from './Prism';
 import {$getLinedCodeNode, addOptionOrDefault} from './utils';
 
 export function swapLcnForFinalVersion(
@@ -36,11 +38,11 @@ export function swapLcnForFinalVersion(
           defaultsOptions.activateTabs ?? false,
         ),
         defaultLanguage: getCodeLanguage(
-          settings.defaultLanguage 
+          settings.defaultLanguage
             || defaultsOptions.defaultLanguage
         ),
         initialLanguage: getCodeLanguage(
-          settings.language 
+          settings.language
             || defaultsOptions.initialLanguage
         ),
         isBlockLocked: addOptionOrDefault(
@@ -54,35 +56,35 @@ export function swapLcnForFinalVersion(
         theme: {
           block: {
             base: addOptionOrDefault(
-              settings?.theme?.block?.base, 
-              defaultsOptions?.theme?.block?.base || ''
+              settings?.theme?.block?.base,
+              defaultsOptions?.theme?.block?.base || 'lined-code-node'
             ),
             extension: addOptionOrDefault(
-              settings?.theme?.block?.extension, 
+              settings?.theme?.block?.extension,
               defaultsOptions?.theme?.block?.extension || ''
             )
           },
+          highlights: addOptionOrDefault(
+            settings.theme?.highlights,
+            defaultsOptions?.theme?.highlights || {}
+          ),
           line: {
             base: addOptionOrDefault(
-              settings?.theme?.line?.base, 
-              defaultsOptions?.theme?.line?.base || ''
+              settings?.theme?.line?.base,
+              defaultsOptions?.theme?.line?.base || 'code-line'
             ),
             extension: addOptionOrDefault(
-              settings?.theme?.line?.extension, 
+              settings?.theme?.line?.extension,
               defaultsOptions?.theme?.line?.extension || ''
             ),
           },
-          highlights: addOptionOrDefault(
-            settings.theme?.highlights, 
-            defaultsOptions?.theme?.highlights || {}
-          ),
           numbers: addOptionOrDefault(
-            settings?.theme?.numbers, 
+            settings?.theme?.numbers,
             defaultsOptions.theme?.numbers || 'line-number'
           )
         },
         themeName: addOptionOrDefault(
-          settings.themeName, 
+          settings.themeName,
           defaultsOptions.themeName || ''
         ),
         tokenizer: addOptionOrDefault(
@@ -133,11 +135,11 @@ function swapCodeNodeForLinedCodeNode() {
   return {
     replace: CodeNode,
     with: (node: CodeNode) => {
-      const options = node.getLanguage() 
-        ? { initialLanguage: node.getLanguage() } 
+      const options = node.getLanguage()
+        ? { initialLanguage: node.getLanguage() }
         : undefined;
 
-      return $createLinedCodeNode(options); 
+      return $createLinedCodeNode(options);
     }
   };
 }

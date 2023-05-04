@@ -1,22 +1,24 @@
+/* eslint-disable header/header */
+import type{LinedCodeLineNode} from './LinedCodeLineNode';
+import type {LinedCodeNode} from './LinedCodeNode';
 import type {
   Point,
   RangeSelection,
 } from 'lexical';
+
 import {
   $getPreviousSelection,
   $getSelection,
   $isRangeSelection,
 } from 'lexical';
 
-import {$isLinedCodeTextNode} from './LinedCodeTextNode';
-import type{LinedCodeLineNode} from './LinedCodeLineNode';
 import {$isLinedCodeLineNode} from './LinedCodeLineNode';
-import type {LinedCodeNode} from './LinedCodeNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
+import {$isLinedCodeTextNode} from './LinedCodeTextNode';
 import {
-  getLinesFromSelection,
   $isEndOfLastCodeLine,
   $isStartOfFirstCodeLine,
+  getLinesFromSelection,
 } from './utils';
 
 type ArrowTypes = 'KEY_ARROW_UP_COMMAND' | 'KEY_ARROW_DOWN_COMMAND';
@@ -225,24 +227,24 @@ function setMultiLineRangeWhenShiftingLines(
   const {child: nextBottomNode, childOffset: nextBottomOffset} =
     bottomLine.getChildFromLineOffset(bottomLineOffset);
 
-  const topKey = nextTopNode !== null 
-    ? nextTopNode.getKey() 
+  const topKey = nextTopNode !== null
+    ? nextTopNode.getKey()
     : topLine.getKey();
-  const topOffset = nextTopNode !== null 
-    ? (nextTopOffset as number) 
+  const topOffset = nextTopNode !== null
+    ? (nextTopOffset as number)
     : 0;
-  const topNodeType = nextTopNode !== null 
-    ? 'text' 
+  const topNodeType = nextTopNode !== null
+    ? 'text'
     : 'element';
 
   const bottomKey = nextBottomNode !== null
     ? nextBottomNode.getKey()
     : bottomLine.getKey();
-  const bottomOffset = nextBottomNode !== null 
-    ? (nextBottomOffset as number) 
+  const bottomOffset = nextBottomNode !== null
+    ? (nextBottomOffset as number)
     : 0;
-  const bottomNodeType = nextBottomNode !== null 
-    ? 'text' 
+  const bottomNodeType = nextBottomNode !== null
+    ? 'text'
     : 'element';
 
   topPoint.set(topKey, topOffset, topNodeType);
@@ -271,7 +273,7 @@ export function handleShiftingLines(
   const isCollapsed = selection.isCollapsed();
 
   if ($isLinedCodeLineNode(topLine) && Array.isArray(linesForUpdate)) {
-    // From here, we may not be able to be able to move the lines 
+    // From here, we may not be able to be able to move the lines
     // around, but we want to return true either way to prevent
     // the event's default behavior.
 

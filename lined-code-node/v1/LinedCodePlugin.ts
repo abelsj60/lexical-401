@@ -1,10 +1,13 @@
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_LOW, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_TAB_COMMAND, MOVE_TO_END, MOVE_TO_START, PASTE_COMMAND } from 'lexical';
-import * as React from 'react';
-
+/* eslint-disable header/header */
 import type {
   LexicalEditor,
 } from 'lexical';
+
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_LOW, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_TAB_COMMAND, MOVE_TO_END, MOVE_TO_START, PASTE_COMMAND } from 'lexical';
+import {mergeRegister} from '@lexical/utils';
+import * as React from 'react';
+
 import {
   CHANGE_THEME_NAME_COMMAND,
   TOGGLE_BLOCK_LOCK_COMMAND,
@@ -17,9 +20,9 @@ import {
   handleMoveTo,
   handleShiftingLines,
 } from './Handlers';
-import {$isLinedCodeTextNode, LinedCodeTextNode} from './LinedCodeTextNode';
 import {$isLinedCodeLineNode, LinedCodeLineNode} from './LinedCodeLineNode';
 import {$isLinedCodeNode, LinedCodeNode} from './LinedCodeNode';
+import {$isLinedCodeTextNode, LinedCodeTextNode} from './LinedCodeTextNode';
 import {$getLinedCodeNode, getLinesFromSelection} from './utils';
 
 function removeHighlightsWithNoTextAfterImportJSON(
@@ -30,7 +33,7 @@ function removeHighlightsWithNoTextAfterImportJSON(
   // exportJSON seems harder to fix, so I'm handling it here. Also
   // note, I can't fix it in a 'created' mutation because this
   // seems to kill history (it'll die after .remove runs).
-  
+
   const isBlankString = highlightNode.getTextContent() === '';
 
   if (isBlankString) {
@@ -52,10 +55,10 @@ function updateHighlightsWhenTyping(highlightNode: LinedCodeTextNode) {
           const {topPoint} = getLinesFromSelection(selection);
           // Get lineOffset before update. It may change...
           const lineOffset = line.getLineOffset(topPoint);
-          
+
           if (codeNode.updateLineCode(line)) {
             const nextSelection = $getSelection();
-            
+
             if ($isRangeSelection(nextSelection)) {
               const anchorNode = nextSelection.anchor.getNode();
               // New same-line text nodes are assigned a temporary
@@ -91,7 +94,7 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
       if ($isLinedCodeNode(codeNode)) {
         // Unlike the official CodeNode, this version uses an
         // updateLineCode method that rejects if the calling
-        // line is up-to-date. Thus, we don't need to pass 
+        // line is up-to-date. Thus, we don't need to pass
         // skipTransforms via a nested editor update.
 
         updateHighlightsWhenTyping(node);
@@ -101,12 +104,12 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
     editor.registerMutationListener(LinedCodeNode, (mutations) => {
       editor.update(() => {
         // We should never select a LinedCodeNode if it has a line
-        // in it, which it always should! 
-        
-        // An example of this bug can be seen in @lexical/markdown. 
-        // It will select the LinedCodeNode when passed triple 
+        // in it, which it always should!
+
+        // An example of this bug can be seen in @lexical/markdown.
+        // It will select the LinedCodeNode when passed triple
         // ticks with a space. This wards the bug off.
-        
+
         for (const [key, type] of mutations) {
           const selection = $getSelection();
 
@@ -114,13 +117,13 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
             if ($isRangeSelection(selection)) {
               // not currently testing focus or !isCollapsed()
               const anchorKey = selection.anchor.key;
-            
+
               if (anchorKey === key) {
                 const node = $getNodeByKey(key);
-      
+
                 if ($isLinedCodeNode(node)) {
                   const startingLine = node.getFirstChild();
-                  
+
                   if ($isLinedCodeLineNode(startingLine)) {
                     startingLine.selectNext(0);
                   }
@@ -134,18 +137,18 @@ export function registerLinedCodeListeners(editor: LexicalEditor) {
     editor.registerMutationListener(LinedCodeLineNode, (mutations) => {
       editor.update(() => {
         for (const [key, type] of mutations) {
-          // Resolves inability to select the end of an indent 
+          // Resolves inability to select the end of an indent
           // when creating a new line via .insertNewAfter().
           if (type === 'created') {
             const node = $getNodeByKey(key);
-  
+
             if ($isLinedCodeLineNode(node)) {
               const firstChild = node.getFirstChild();
-              
+
               if ($isLinedCodeTextNode(firstChild)) {
                 const line = firstChild.getParent() as LinedCodeLineNode;
                 const firstCharacterIndex = line.getFirstCharacterIndex();
-                
+
                 if (firstCharacterIndex > 0) {
                   firstChild.select(firstCharacterIndex, firstCharacterIndex);
                 }
@@ -325,11 +328,4 @@ export default function LinedCodePlugin(): JSX.Element | null {
   }, [editor]);
 
   return null;
-}
-
-type Func = () => void;
-export function mergeRegister(...func: Array<Func>): () => void {
-  return () => {
-    func.forEach((f) => f());
-  };
 }

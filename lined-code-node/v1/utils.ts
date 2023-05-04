@@ -1,3 +1,7 @@
+/* eslint-disable header/header */
+import type {LinedCodeLineNode} from './LinedCodeLineNode';
+import type {LinedCodeNode, LinedCodeNodeTheme} from './LinedCodeNode';
+import type {NormalizedToken, Token} from './Prism';
 import type {
   GridSelection,
   LexicalNode,
@@ -7,17 +11,15 @@ import type {
   RangeSelection,
   TextNode as LexicalTextNode,
 } from 'lexical';
+
 import {
   $getSelection,
   $isRangeSelection,
 } from 'lexical';
 
-import {$isLinedCodeTextNode} from './LinedCodeTextNode';
-import type {LinedCodeLineNode} from './LinedCodeLineNode';
 import {$isLinedCodeLineNode} from './LinedCodeLineNode';
-import type {LinedCodeNode, LinedCodeNodeTheme} from './LinedCodeNode';
 import {$isLinedCodeNode} from './LinedCodeNode';
-import type {NormalizedToken, Token} from './Prism';
+import {$isLinedCodeTextNode} from './LinedCodeTextNode';
 
 type BorderPoints = {
   bottomPoint: Point;
@@ -95,7 +97,7 @@ export function $getLinedCodeNode(): LinedCodeNode | null {
     const anchorNode = anchor.getNode();
     const parentNode = anchorNode.getParent();
     const grandparentNode = parentNode && parentNode.getParent();
-    
+
     const codeNode =
       [
         anchorNode,
@@ -145,7 +147,7 @@ export function getLinedCodeNodesFromSelection(
 
       if ($isLinedCodeLineNode(line)) {
         const codeNode = line.getParent();
-        
+
         if ($isLinedCodeNode(codeNode)) {
           if (!codeSet.has(codeNode)) {
             codeSet.add(codeNode);
@@ -159,7 +161,7 @@ export function getLinedCodeNodesFromSelection(
 }
 
 export function getCodeNodeFromEntries(
-  pointNode: LexicalNode, 
+  pointNode: LexicalNode,
   codeNodes: LinedCodeNode[]
 ) {
   return codeNodes.find((codeNode) => {
@@ -169,7 +171,7 @@ export function getCodeNodeFromEntries(
       return ln !== null && line.getKey() === ln.getKey();
     }).length > 0
   });
-};
+}
 
 export function $convertCodeToPlainText(
   selection: RangeSelection | NodeSelection | GridSelection | null
@@ -321,8 +323,8 @@ export function removeClassNamesFromElement(
 }
 
 export function getParamsToSetSelection (
-  block: ParagraphNode, 
-  child: LexicalTextNode | null, 
+  block: ParagraphNode,
+  child: LexicalTextNode | null,
   offset: number | null
 ): [string, number, 'text' | 'element'] {
   const isEmptyLine = child === null;
@@ -331,13 +333,13 @@ export function getParamsToSetSelection (
 }
 
 export function normalizePoints(
-  anchor: Point, 
-  focus: Point, 
+  anchor: Point,
+  focus: Point,
   isBackward: boolean
 ): { topPoint: Point; bottomPoint: Point } {
   return {
+    bottomPoint: !isBackward ? focus : anchor,
     topPoint: !isBackward ? anchor : focus,
-    bottomPoint: !isBackward ? focus : anchor
   }
 }
 
@@ -347,14 +349,14 @@ export function getLineCarefully(node: LexicalNode) {
     : $isLinedCodeLineNode(node)
     ? node as LinedCodeLineNode
     : null;
-    
+
   return lineNode;
-};
+}
 
 export function $transferSelection(
-  anchorOffset: number, 
-  focusOffset: number, 
-  topLine: LinedCodeLineNode | null, 
+  anchorOffset: number,
+  focusOffset: number,
+  topLine: LinedCodeLineNode | null,
   bottomLine: LinedCodeLineNode | null
 ) {
   const selection = $getSelection();

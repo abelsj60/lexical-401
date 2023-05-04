@@ -14,8 +14,6 @@ And that's how Lexical 401 was born. I may be the only one to use it, but you're
 
 -j (abelsj60@gmail.com)
 
-*--Note: This repo is released under [MIT License](https://github.com/abelsj60/lexical-401/blob/main/LICENSE.md). It applies to [all contributors, per GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license).*
-
 ## FAQ
 
 <details><summary>How do I add something?</summary>
@@ -65,6 +63,7 @@ _Just for fun, feel free to add yours..._
 ### Publishing systems
 
 - [Isaac Editor](https://isaaceditor.com/) | Academic writing with AI
+- [Medium](https://github.com/wingedrasengan927/lexical-medium-clone) | Lexical Medium clone
 - [Storycraft](https://storycraft.pro/) | Telling stories with AI
 
 ### Augmentations
@@ -76,3 +75,17 @@ _Just for fun, feel free to add yours..._
 
 - [Dossier](https://www.dossierhq.dev/) | Build your own headless CMS
 - [Payload plugin](https://github.com/AlessioGr/payload-plugin-lexical) | Use Lexical with Payload CMS
+
+### Deep dives
+
+- The world at large
+  - [Make a floating menu](https://konstantin.digital/blog/how-to-build-a-floating-menu-with-lexical-react) (bonus: [Plugin code](https://github.com/konstantinmuenster/lexical-floating-menu))
+  - [Make a text editor](https://konstantin.digital/blog/how-to-build-a-text-editor-with-lexical-and-react)
+
+- Core team videos
+  - [Nodes-n-plugins w/Acy](https://youtu.be/abZNazybzvs)
+  - [Headings, lists, and the toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
+  - [Themes, nodes, and the rich text plugin w/Acy](https://youtu.be/pIBUFYd9zJY)
+  - [Three questions w/Gerard and Maksim](https://youtu.be/Vpv0BYhhlak)
+  - [Getting started w/Acy](https://youtu.be/qIqxvk2qcmo)
+  - [UtahJS meetup w/Acy](https://youtu.be/EwoS0dIx_OI)

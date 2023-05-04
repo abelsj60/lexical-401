@@ -1,8 +1,10 @@
-import { $generateNodesFromSerializedNodes } from '@lexical/clipboard';
-import { $generateNodesFromDOM } from '@lexical/html';
-
+/* eslint-disable header/header */
+import type {
+  LinedCodeLineNode,
+} from './LinedCodeLineNode';
+import type {LinedCodeTextNode} from './LinedCodeTextNode';
+import type {NormalizedToken, Token, Tokenizer} from './Prism';
 import type {SerializedCodeNode} from '@lexical/code';
-import {CodeNode} from '@lexical/code';
 import type {
   DOMConversionMap,
   DOMExportOutput,
@@ -14,16 +16,22 @@ import type {
   Spread,
   TextNode as LexicalTextNode,
 } from 'lexical';
+
+import { $generateNodesFromSerializedNodes } from '@lexical/clipboard';
+import {CodeNode} from '@lexical/code';
+import { $generateNodesFromDOM } from '@lexical/html';
+import { $setBlocksType } from '@lexical/selection';
 import {
-  $isTextNode,
   $applyNodeReplacement,
   $createParagraphNode,
   $createTextNode,
   $getRoot,
   $getSelection,
   $isRangeSelection,
-  $isRootNode
-} from 'lexical';
+  $isRootNode,
+  $isTextNode} from 'lexical';
+import { EditorThemeClassName } from 'packages/lexical/src/LexicalEditor';
+
 import {
   convertDivElement,
   convertPreElement,
@@ -31,32 +39,25 @@ import {
   isCodeElement,
   isGitHubCodeTable,
 } from './Importers';
-import {$createLinedCodeTextNode} from './LinedCodeTextNode';
-import type {LinedCodeTextNode} from './LinedCodeTextNode';
-import type {
-  LinedCodeLineNode,
-} from './LinedCodeLineNode';
 import {
   $createLinedCodeLineNode,
   $isLinedCodeLineNode,
 } from './LinedCodeLineNode';
+import {$createLinedCodeTextNode} from './LinedCodeTextNode';
 import {getCodeLanguage} from './Prism';
-import { $setBlocksType_experimental } from "@lexical/selection";
-import type {NormalizedToken, Token, Tokenizer} from './Prism';
 import {
-  getLinesFromSelection,
+  $transferSelection,
   addClassNamesToElement,
   addOptionOrNull,
+  getCodeNodeFromEntries,
+  getLineCarefully,
   getLinedCodeNodesFromSelection,
+  getLinesFromSelection,
   getNormalizedTokens,
   getParamsToSetSelection,
   normalizePoints,
   removeClassNamesFromElement,
-  getLineCarefully,
-  getCodeNodeFromEntries,
-  $transferSelection,
 } from './utils';
-import type { EditorThemeClassName } from 'lexical/LexicalEditor';
 
 export interface LinedCodeNodeOptions {
   activateTabs?: boolean | null;
@@ -80,6 +81,7 @@ export interface LinedCodeNodeTheme {
   };
   numbers?: EditorThemeClassName;
   highlights?: Record<string, EditorThemeClassName>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // makes TS very happy
 }
 
@@ -99,7 +101,7 @@ type SerializedLinedCodeNode = Spread<
 const LANGUAGE_DATA_ATTRIBUTE = 'data-highlight-language';
 
 // TS will kick an error about the SerializedCodeNode not having
-// the options property. Let's give it a judicious helping 
+// the options property. Let's give it a judicious helping
 // hand: https://stackoverflow.com/a/57211915
 
 const TypelessCodeNode: (new (key?: NodeKey) => CodeNode) &
@@ -210,7 +212,7 @@ export class LinedCodeNode extends TypelessCodeNode {
     }
 
     dom.setAttribute('spellcheck', 'false');
-    
+
     return dom;
   }
 
@@ -250,7 +252,7 @@ export class LinedCodeNode extends TypelessCodeNode {
 
     if (language !== null && language !== prevLanguage) {
       dom.setAttribute(LANGUAGE_DATA_ATTRIBUTE, language);
-    } 
+    }
 
     return false;
   }
@@ -338,7 +340,7 @@ export class LinedCodeNode extends TypelessCodeNode {
       ...super.exportJSON(),
       options: this.getLatest().getSettingsForExportJSON(),
       type: 'code-node' as 'code', // not cool, but TS says necessary!
-      version: 1 as 1, // ridiculous, but TS also says necessary!
+      version: 1 as const, // ridiculous, but TS also says necessary!
     };
   }
 
@@ -351,7 +353,7 @@ export class LinedCodeNode extends TypelessCodeNode {
     paragraph.setDirection(writableCodeNode.getDirection());
     prevLine.remove();
 
-    // leave at least one line 
+    // leave at least one line
     if (writableCodeNode.getChildrenSize() > 1) {
       lastLine.remove();
     }
@@ -378,11 +380,11 @@ export class LinedCodeNode extends TypelessCodeNode {
     if (writableCodeNode.getChildrenSize() === 1) {
       if (readyToAppend.length > 0) {
         const startingLine = writableCodeNode.getFirstChild();
-  
+
         if ($isLinedCodeLineNode(startingLine)) {
           if (startingLine.isEmpty()) {
             const newText = readyToAppend[0].getTextContent();
-            
+
             // While .replace seems to lose the text here,
             // .replaceLineCode doesn't. I'll take it.
 
@@ -400,7 +402,7 @@ export class LinedCodeNode extends TypelessCodeNode {
     const self = this.getLatest();
     const code = self.getHighlightNodes(text);
     const writableLine = line.getWritable();
-    
+
     writableLine.splice(0, writableLine.getChildrenSize(), code);
 
     return writableLine;
@@ -450,12 +452,12 @@ export class LinedCodeNode extends TypelessCodeNode {
 
       let bottomLineIndex = -1;
       let bottomLineOffset = -1;
-      
+
       // 1. Save the last node/selection data so we can update it later.
 
       if (updateSelection) {
         const selection = $getSelection();
-        
+
         if ($isRangeSelection(selection)) {
           const { anchor, focus } = selection;
           const isBackward = selection.isBackward();
@@ -474,10 +476,10 @@ export class LinedCodeNode extends TypelessCodeNode {
             if ($isLinedCodeLineNode(topLine)) {
               topLineOffset = topLine.getLineOffset(topPoint);
               topLineIndex = topLine.getIndexWithinParent();
-  
+
               if (!bottomCodeNode && topCodeNode === bottomCodeNode) {
                 bottomLineOffset = topLineOffset;
-                bottomLineIndex = topLineIndex; 
+                bottomLineIndex = topLineIndex;
               }
             }
           }
@@ -513,7 +515,7 @@ export class LinedCodeNode extends TypelessCodeNode {
 
       if (updateSelection) {
         const nextSelection = $getSelection();
-        
+
         if ($isRangeSelection(nextSelection)) {
           // Get a new selection. It's stale after .remove and the Root
           // had a different state when we got the last one...
@@ -521,10 +523,10 @@ export class LinedCodeNode extends TypelessCodeNode {
           const { anchor, focus } = nextSelection;
           const isNextSelectionBackward = nextSelection.isBackward();
           const {
-            topPoint: nextTopPoint, 
+            topPoint: nextTopPoint,
             bottomPoint: nextBottomPoint
           } = normalizePoints(anchor, focus, isNextSelectionBackward);
-          
+
           if (topLineOffset > -1) {
             const paragraph = paragraphs[topLineIndex];
             const textNode = paragraph.getFirstChild<LexicalTextNode>();
@@ -551,7 +553,7 @@ export class LinedCodeNode extends TypelessCodeNode {
     if (!writableCodeNode.getSettings().isBlockLocked) {
       writableCodeNode.convertToPlainText(true);
     }
-    
+
     return true;
   }
 
@@ -593,7 +595,7 @@ export class LinedCodeNode extends TypelessCodeNode {
 
           // Use LexicalNodes here to avoid double linebreaks (\n\n).
           // (CodeNode.getTextContent() inserts double breaks...)
-          
+
           const normalizedNodesFromPaste = $isLinedCodeNode(lexicalNodes[0])
             ? lexicalNodes[0].getChildren()
             : lexicalNodes;
@@ -606,7 +608,7 @@ export class LinedCodeNode extends TypelessCodeNode {
           const startIndex = originalLineIndex;
           const deleteCount = (linesForUpdate as LinedCodeLineNode[]).length;
           const codeLines = writableCodeNode.createCodeLines(rawText);
-          
+
           writableCodeNode.splice(startIndex, deleteCount, codeLines);
 
           const lastLine = codeLines.slice(-1)[0];
@@ -679,14 +681,14 @@ export class LinedCodeNode extends TypelessCodeNode {
           const lastCurrentLine = currentLines[currentLines.length - 1];
           const lastLineTextLength = lastCurrentLine.getTextContentSize();
 
-          // Edge case: Adjust offset if last line is too short. selections... 
+          // Edge case: Adjust offset if last line is too short. selections...
           if (lastLineTextLength < bottomLineOffset) bottomLineOffset = lastLineTextLength;
-          
+
           bottomLinesToMerge = currentLines.slice(startingIndex, codeNodeLength);
         }
       }
 
-      $setBlocksType_experimental(selection, () => {
+      $setBlocksType(selection, () => {
         const line = $createLinedCodeLineNode();
         lineSet.add(line)
         return line;
@@ -694,18 +696,18 @@ export class LinedCodeNode extends TypelessCodeNode {
 
       const newLines = Array.from(lineSet);
       const firstNewLine = newLines[0];
-      const nodeToReplace = $isLinedCodeNode(topCodeNode) 
-        ? firstNewLine.getParent() as LinedCodeNode 
+      const nodeToReplace = $isLinedCodeNode(topCodeNode)
+        ? firstNewLine.getParent() as LinedCodeNode
         : firstNewLine;
-      
+
       writableSelf.append(...topLinesToMerge, ...newLines, ...bottomLinesToMerge);
 
       // FYI: .replace burns selection. Restore it with a new one..!
-      nodeToReplace.replace(writableSelf); 
-      
-      // Note: Currently, I don't perfectly transfer uncollapsed selection 
-      // points when the anchor or focus is in a CodeNode (topCodeNode or
-      // bottomCodeNode). It's decent enough to work and feels fairly
+      nodeToReplace.replace(writableSelf);
+
+      // Note: Currently, I don't perfectly transfer uncollapsed selection
+      // points when the anchor or focus is in a CodeNode (topCodeLine or
+      // bottomCodeLine). It's decent enough to work and feels fairly
       // natural, but it's not 100%. What happens is that selectNext
       // will move the current offsets to the first and last lines.
       // Doing better was nightmarish. I gave up! Apologies...
@@ -745,7 +747,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   toggleBlockLock() {
     // cmd: TOGGLE_BLOCK_LOCK_COMMAND
     const writableCodeNode = this.getWritable();
-    
+
     writableCodeNode.__isLockedBlock = !this.getLatest().__isLockedBlock;
 
     return writableCodeNode.__isLockedBlock;
@@ -862,7 +864,7 @@ export class LinedCodeNode extends TypelessCodeNode {
   }
 
   getLanguage() {
-    // Note: highly specific method included for parity with 
+    // Note: highly specific method included for parity with
     // official CodeNode
     return this.getLatest().getSettings().language;
   }
