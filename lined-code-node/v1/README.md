@@ -24,11 +24,11 @@ _Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.c
 
 ### Node-level settings
 
-Generally speaking, most `LexicalNodes` are controlled by the editor instance and selection.
+Generally speaking, most `LexicalNodes` are controlled by the editor instance and/or `selection`.
 
-By contrast, each `LinedCodeNode` controls its own internal operation, including tokenization, line classes, and node creation.
+By contrast, each `LinedCodeNode` controls its own internal operations, such as tokenization, adding and removing line classes, and node creation.
 
-In practical terms, this means you can configure each node by passing a settings object to the node via `$createLinedCodeNode`. You can also provide a set of default settings when adding the `LinedCodeNodes` to your `LexicalComposer`'s nodes array. (Automatic fallbacks take over when you don't.)
+In practical terms, this means you can configure each node by passing a settings object to the node via `$createLinedCodeNode`. You can also provide default settings by passing a similar object to `getLinedCodeNodes`, which you pass to the `LexicalComposer`'s nodes array. (Automatic fallbacks take over when you don't.)
 
 ### Tree view
 
@@ -51,8 +51,8 @@ Root (<div />)
 As you can see, the `LinedCodeNode` puts code in lines. This was difficult to achieve. I've done it by:
 
 - Marking the `LinedCodeNode`'s DOM element ("`code`") `shadowRoot`, and
-- Using the Override API to replace its paragraphs and text with code lines and code highlights.
-  - This is done by testing whether the current `selection` is in a "`code`" element. If it is, the swaps occur. Otherwise, they do not.
+- Using the Override API to replace paragraphs with code lines and text with code highlights when they're in a "`code`" element.
+  - This is done by testing the current `selection`. It it's in a "`code`" element, the overrides apply. They won't apply otherwise.
 
 ### Plain-text logic
 
