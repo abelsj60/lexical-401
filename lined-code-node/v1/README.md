@@ -14,6 +14,8 @@ _Note: Generally speaking, each `LinedCodeNode` works on its own. To modify all 
 
 https://codesandbox.io/embed/muddy-feather-52r2k2?fontsize=14&hidenavigation=1&theme=dark
 
+_Note: Using Brave? The `CodeActionMenu`'s copy button may fail in the CodeSandbox.com page. Try popping opening its browser window open in a new tab. It should work fine._
+
 ---
 
 ## Philosophy
