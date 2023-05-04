@@ -1,8 +1,10 @@
 # LinedCodeNode
 
+Ver: 1.01
+
 ## Overview
 
-Lexical's can't place code in lines by default.
+Lexical can't place code in lines by default.
 
 The `LinedCodeNode` can. This is useful when creating code editors, calling attention to specific lines, or toggling color schemes, line-number visibility, and more, at the touch of a button.
 
