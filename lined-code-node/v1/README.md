@@ -262,7 +262,7 @@ It's pretty easy to convert a `LinedCodeNode` to another node.
 
 - Second: Use `$setBlocksType` to convert your new paragraphs into another kind of node. You could also call a command. Whatever you want.
 
-    Ex. 1: Paragraph transform
+  - Ex. 1: Paragraph transform
     ```ts
     const formatParagraph = () => {
       if (blockType !== "paragraph") {
@@ -279,7 +279,7 @@ It's pretty easy to convert a `LinedCodeNode` to another node.
     };
     ```
 
-    Ex. 2: List transform
+  - Ex. 2: List transform
     ```ts
     const formatBulletList = () => {
       if (blockType !== 'bullet') {
