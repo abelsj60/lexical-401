@@ -10,13 +10,11 @@ https://user-images.githubusercontent.com/30417590/219041359-3064c2cc-160c-48d1-
 
 _Note: Generally speaking, each `LinedCodeNode` works on its own. To modify all of them at once, you should follow the usual practice of traversing the Lexical node map._
 
----
-
-CODE SANDBOX
+### CodeSandbox
 
 https://codesandbox.io/embed/muddy-feather-52r2k2?fontsize=14&hidenavigation=1&theme=dark
 
-_Note: Testing the CodeActionMenu's copy button? You may need to open the sandbox in its own page._
+_Note: Testing the CodeActionMenu's copy button? You may need to open the Sandbox's browser window view in its own tab._
 
 ---
 
