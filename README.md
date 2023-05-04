@@ -85,9 +85,9 @@ _Just for fun, feel free to add yours..._
   - [Make a text editor](https://konstantin.digital/blog/how-to-build-a-text-editor-with-lexical-and-react)
 
 - Lexical core team
-  - [Getting started w/Acy](https://youtu.be/qIqxvk2qcmo)
-  - [Themes, nodes, rich text w/Acy](https://youtu.be/pIBUFYd9zJY)
-  - [Headings, lists, toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
   - [Nodes-n-plugins w/Acy](https://youtu.be/abZNazybzvs)
+  - [Headings, lists, toolbar w/Acy](https://youtu.be/5sRh_WXw0WI)
+  - [Themes, nodes, rich text w/Acy](https://youtu.be/pIBUFYd9zJY)
   - [Three q's w/Gerard and Maksim](https://youtu.be/Vpv0BYhhlak)
+  - [Getting started w/Acy](https://youtu.be/qIqxvk2qcmo)
   - [UtahJS meetup w/Acy](https://youtu.be/EwoS0dIx_OI)
