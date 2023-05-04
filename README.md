@@ -81,7 +81,7 @@ _Just for fun, feel free to add yours..._
 ### Deep dives
 
 - The world at large
-  - [Make a floating menu](https://konstantin.digital/blog/how-to-build-a-floating-menu-with-lexical-react) ([Bonus: Plugin code](https://github.com/konstantinmuenster/lexical-floating-menu))
+  - [Make a floating menu](https://konstantin.digital/blog/how-to-build-a-floating-menu-with-lexical-react) ([bonus: Plugin code](https://github.com/konstantinmuenster/lexical-floating-menu))
   - [Make a text editor](https://konstantin.digital/blog/how-to-build-a-text-editor-with-lexical-and-react)
 
 - Lexical core team
