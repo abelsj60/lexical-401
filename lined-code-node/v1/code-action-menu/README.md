@@ -95,7 +95,7 @@ _Note: The `CodeActionMenu` should work in production, even if it doesn't in dev
               }
             }
 
-            <!-- HERE! 👇 UPDATE THIS IF BLOCK TO UPDATE INDIVIDUAL LINES! -->
+            <!-- HERE! 👇 UPDATE THIS IF BLOCK TO WORK WITH INDIVIDUAL LINES! -->
 
             if (parsed !== '') {
               const parsedTextByLine = parsed.split(/\n/);
