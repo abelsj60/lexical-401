@@ -51,15 +51,15 @@ Root (<div />)
 
 As you can see, the `LinedCodeNode` puts code in lines. This was difficult to achieve. I've done it by:
 
-- Marking the `LinedCodeNode`'s DOM element ("`code`") `shadowRoot`, and
-- Using the Override API to replace paragraphs with code lines and text with code highlights when they're in a "`code`" element.
-  - This is done by testing the current `selection`. It it's in a "`code`" element, the overrides apply. They won't apply otherwise.
+- Marking the `LinedCodeNode` as `shadowRoot`, and
+- Using the Override API to replace paragraphs with code lines and text with code highlights when they're in a `LinedCodeNode`.
+  - This is done by testing the current `selection`. It it's in a `LinedCodeNode`, the overrides apply. They won't apply otherwise.
 
 ### Plain-text logic
 
 Internally, the `LinedCodeNode` revolves around plain text.
 
-On update, it reads each line's plain text, runs some update logic, then refreshes the results.
+On update, it reads each line's plain text, runs some update logic, then refreshes the highlights.
 
 ## Guides and patterns
 
