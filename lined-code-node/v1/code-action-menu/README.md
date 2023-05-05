@@ -6,6 +6,35 @@ _Note: The `CodeActionMenu` should work in production, even if it doesn't in dev
 
 1. [CodeActionMenu.tsx](https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/CodeActionMenuPlugin/index.tsx)
 
+    a. Update the mutation listener
+
+    ```ts
+    <!-- HERE! 👇 UPDATE THE NODE FROM CODE_NODE TO LINED_CODE_NODE -->
+
+    editor.registerMutationListener(LinedCodeNode, (mutations) => {
+      editor.getEditorState().read(() => {
+        for (const [key, type] of mutations) {
+          switch (type) {
+            case "created":
+              codeSetRef.current.add(key);
+              setShouldListenMouseMove(codeSetRef.current.size > 0);
+              break;
+
+            case "destroyed":
+              codeSetRef.current.delete(key);
+              setShouldListenMouseMove(codeSetRef.current.size > 0);
+              break;
+
+            default:
+              break;
+          }
+        }
+      });
+    });
+    ```
+
+    b. Update the mouse utility
+
     ```ts
     function getMouseInfo(event: MouseEvent): {
       codeDOMNode: HTMLElement | null;
@@ -16,8 +45,7 @@ _Note: The `CodeActionMenu` should work in production, even if it doesn't in dev
       if (target && target instanceof HTMLElement) {
         const codeDOMNode = target.closest<HTMLElement>(
 
-          // HERE 👇 MATCH YOUR LINED-CODE-NODE CLASS NAME
-          // (THIS IS THE DEFAULT CLASS)
+          <!-- HERE! 👇 UPDATE THIS CLASS NAME TO MATCH YOURS -->
 
           'code.lined-code-node',
         );
@@ -67,8 +95,7 @@ _Note: The `CodeActionMenu` should work in production, even if it doesn't in dev
               }
             }
 
-            // HERE! 👇 UPDATE THIS IF BLOCK! 🤞 THAT SHOULD BE IT...
-            // LEXICAL SHOULD SEE LINED_CODE_NODE AS CODE_NODE...
+            <!-- HERE! 👇 UPDATE THIS IF BLOCK TO UPDATE INDIVIDUAL LINES! -->
 
             if (parsed !== '') {
               const parsedTextByLine = parsed.split(/\n/);

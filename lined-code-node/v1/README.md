@@ -112,7 +112,7 @@ You can get the `LinedCodeNode` up and running in three easy steps:
     - `line: { base: ‘code-line’ }`
     - `numbers: ‘line-number’`
 
-    To use your own class names, pass a theme to `getLinedCodeNodes`. You can override them by passing a custom theme to `$createLinedCodeNode`.
+    To use your own class names, pass a theme to `getLinedCodeNodes`. You can always override this theme by passing another one to `$createLinedCodeNode`.
 
     - Here’s an example of how you might structure your css:
 
