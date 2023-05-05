@@ -34,7 +34,7 @@ In practical terms, this means you can configure each node by passing a settings
 
 Internally, the `LinedCodeNode` looks like this:
 
-```jsx
+```
 Root (<div />)
   LinedCodeNode (<code />)
     LinedCodeLineNode (<div />)
@@ -42,10 +42,10 @@ Root (<div />)
 ```
 By contrast, the official `CodeNode` looks like this:
 
-```jsx
+```
 Root (<div />)
   Code element (<code />)
-    Text/code (<span />)
+    Text highlights (<span />)
     Linebreak (<br />)
 ```
 
