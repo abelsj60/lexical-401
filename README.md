@@ -68,7 +68,8 @@ _Just for fun, feel free to add yours..._
 
 ### Augmentations
 
-- [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with MDX project
+- [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with [MDX](https://mdxjs.com/)
+- [Lexical Remark](https://github.com/themagickoala/lexical-remark) | Enhance Markdown w/[Remark](https://github.com/remarkjs/remark)
 - [YiLang 2.0](https://github.com/Yidaotus/YiLang2) | Build your own language graph
 
 ### Content management systems
