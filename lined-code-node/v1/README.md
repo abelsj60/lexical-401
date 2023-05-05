@@ -14,9 +14,9 @@ _Note: Generally speaking, each `LinedCodeNode` is self-contained. To modify all
 
 ### CodeSandbox
 
-https://codesandbox.io/embed/muddy-feather-52r2k2?fontsize=14&hidenavigation=1&theme=dark
+https://codesandbox.io/s/linedcodenode-lexical-52r2k2
 
-_Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.com. If so, try opening its browser in a new tab._
+_Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.io. If so, try opening its browser in a new tab._
 
 ---
 
@@ -24,11 +24,11 @@ _Note: Using Brave? The `CodeActionMenu`'s copy button may fail in CodeSandbox.c
 
 ### Node-level settings
 
-Generally speaking, most `LexicalNodes` are controlled by the editor instance and selection.
+Generally speaking, most `LexicalNodes` are controlled by the editor instance and/or the `selection`.
 
-By contrast, each `LinedCodeNode` controls its own internal operation, including tokenization, line classes, and node creation.
+By contrast, each `LinedCodeNode` controls its own internal operations, such as tokenization, adding and removing line classes, and node creation.
 
-In practical terms, this means you can configure each node by passing a settings object to the node via `$createLinedCodeNode`. You can also provide a set of default settings when adding the `LinedCodeNodes` to your `LexicalComposer`'s nodes array. (Automatic fallbacks take over when you don't.)
+In practical terms, this means you can configure each node by passing a settings object to the node via `$createLinedCodeNode`. You can also provide default settings by passing a similar object to `getLinedCodeNodes`, which is passed to the `LexicalComposer`'s nodes array. (Automatic fallbacks take over when you don't.)
 
 ### Tree view
 
@@ -48,17 +48,18 @@ Root (<div />)
     Text/code (<span />)
     Linebreak (<br />)
 ```
+
 As you can see, the `LinedCodeNode` puts code in lines. This was difficult to achieve. I've done it by:
 
-- Marking the `LinedCodeNode`'s DOM element ("`code`") `shadowRoot`, and
-- Using the Override API to replace its paragraphs and text with code lines and code highlights.
-  - This is done by testing whether the current `selection` is in a "`code`" element. If it is, the swaps occur. Otherwise, they do not.
+- Marking the `LinedCodeNode` as `shadowRoot`, and
+- Using the Override API to replace paragraphs with code lines and text with code highlights when they're in a `LinedCodeNode`.
+  - This is done by testing the current `selection`. It it's in a `LinedCodeNode`, the overrides apply. They won't apply otherwise.
 
 ### Plain-text logic
 
 Internally, the `LinedCodeNode` revolves around plain text.
 
-On update, it reads each line's plain text, runs some update logic, then refreshes the results.
+On update, it reads each line's plain text, runs some update logic, then refreshes the highlights.
 
 ## Guides and patterns
 
@@ -162,6 +163,7 @@ You can get the `LinedCodeNode` up and running in three easy steps:
       .code-line {
         white-space: pre;
       }
+
       .code-line:hover {
         background-color: yellow;
       }
