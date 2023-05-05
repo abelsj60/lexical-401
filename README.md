@@ -70,6 +70,7 @@ _Just for fun, feel free to add yours..._
 
 - [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with [MDX](https://mdxjs.com/)
 - [Lexical Remark](https://github.com/themagickoala/lexical-remark) | Improve Markdown w/[Remark](https://github.com/remarkjs/remark)
+- [Lexical Utils](https://github.com/johannesschaffer/lexical-utils) | Third-party utility suite
 - [YiLang 2.0](https://github.com/Yidaotus/YiLang2) | Build your own language graph
 
 ### Content management systems
