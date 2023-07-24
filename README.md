@@ -65,13 +65,20 @@ _Just for fun, feel free to add yours..._
 - [Isaac Editor](https://isaaceditor.com/) | Academic writing with AI
 - [Medium](https://github.com/wingedrasengan927/lexical-medium-clone) | Lexical Medium clone
 - [Storycraft](https://storycraft.pro/) | Telling stories with AI
+- [Writekit.ai](https://writekit.ai/) | AI-based word processor
+- [The Share](https://theshr.xyz/) | Shareable stories
 
-### Augmentations
+### Publishing platforms
 
 - [Lexical MDX](https://github.com/virtuoso-dev/lexical-mdx) | Mix Lexical with [MDX](https://mdxjs.com/)
 - [Lexical Remark](https://github.com/themagickoala/lexical-remark) | Improve Markdown w/[Remark](https://github.com/remarkjs/remark)
 - [Lexical Utils](https://github.com/johannesschaffer/lexical-utils) | Third-party utility suite
 - [YiLang 2.0](https://github.com/Yidaotus/YiLang2) | Build your own language graph
+
+### Software libraries
+
+- [lexical-examples](https://github.com/konstantinmuenster/lexical-examples) | Code examples for using Lexical
+- [MDXEditor](https://mdxeditor.dev/) | Markdown and MDX editor built with Lexical
 
 ### Content management systems
 
